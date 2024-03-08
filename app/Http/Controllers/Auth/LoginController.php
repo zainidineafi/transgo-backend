@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Providers\RouteServiceProvider;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+
 
 class LoginController extends Controller
 {
@@ -16,6 +20,16 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            // Jika pengguna sudah terotentikasi, arahkan mereka ke dashboard
+            if (Auth::user()->hasRole('Root')) {
+                return redirect()->route('upts.index');
+            } elseif (Auth::user()->hasRole('Admin')) {
+                return redirect()->route('dashboard');
+            }
+        }
+
+        // Jika belum terotentikasi, tampilkan halaman login
         return view('auth.login');
     }
 
@@ -30,36 +44,23 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            // Mengakses pengguna yang telah berhasil login
-            $user = Auth::user();
+            $user = User::find(Auth::user()->id);
 
-            // Menyimpan level pengguna ke dalam sesi
-            $request->session()->put('user_level', $user->type);
 
-            // Cetak level pengguna untuk memeriksanya
-            $userLevel = $request->session()->get('user_level');
-            dd($userLevel); // Mencetak nilai level pengguna
-
-            // Redirect sesuai dengan level pengguna
-            switch ($user->type) {
-                case 0: // Superadmin
-                    return redirect()->route('dashboard');
-                    break;
-                case 1: // Admin
-                    return redirect()->route('admin.dashboard');
-                    break;
-                case 2: // Kondektur/Sopir
-                    return redirect()->route('driver.dashboard');
-                    break;
-                case 3: // User
-                    return redirect()->route('user.dashboard');
-                    break;
+            if ($user->hasRole('Root')) {
+                // Jika peran pengguna adalah 'root', tampilkan halaman read upt
+                return redirect()->route('upts.index');
+            } elseif ($user->hasRole('Upt')) {
+                // Jika peran pengguna adalah 'upt', tampilkan full dashboard
+                return redirect()->route('full_dashboard');
+            } elseif ($user->hasRole('Admin')) {
+                // Jika peran pengguna adalah 'admin', tampilkan custom dashboard
+                return redirect()->route('dashboard');
             }
         }
 
-        return redirect()->back()->withInput($request->only('email'))->withErrors([
-            'email' => 'These credentials do not match our records.',
-        ]);
+
+        return redirect()->back()->withInput($request->only('email'))->with('error', 'Email dan Password Salah !');
     }
 
 

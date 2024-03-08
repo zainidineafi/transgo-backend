@@ -15,14 +15,14 @@
         <!-- Styles -->
         <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link href="assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <link href="assets/plugins/font-awesome/css/all.min.css" rel="stylesheet">
-        <link href="assets/plugins/toastr/toastr.min.css" rel="stylesheet">  
+        <link href="../assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../assets/plugins/font-awesome/css/all.min.css" rel="stylesheet">
+        <link href="../assets/plugins/toastr/toastr.min.css" rel="stylesheet">  
 
       
         <!-- Theme Styles -->
-        <link href="assets/css/lime.min.css" rel="stylesheet">
-        <link href="assets/css/custom.css" rel="stylesheet">
+        <link href="../assets/css/lime.min.css" rel="stylesheet">
+        <link href="../assets/css/custom.css" rel="stylesheet">
 
 
     </head>
@@ -84,14 +84,16 @@
         
         
         <!-- Javascripts -->
-        <script src="assets/plugins/jquery/jquery-3.1.0.min.js"></script>
-        <script src="assets/plugins/bootstrap/popper.min.js"></script>
-        <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
-        <script src="assets/plugins/jquery-slimscroll/jquery.slimscroll.min.js"></script>
-        <script src="assets/plugins/chartjs/chart.min.js"></script>
-        <script src="assets/plugins/apexcharts/dist/apexcharts.min.js"></script>
-        <script src="assets/plugins/toastr/toastr.min.js"></script>
-        <script src="assets/js/lime.min.js"></script>
-        <script src="assets/js/pages/dashboard.js"></script>
+        <script src="../assets/plugins/jquery/jquery-3.1.0.min.js"></script>
+        <script src="../assets/plugins/bootstrap/popper.min.js"></script>
+        <script src="../assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+        <script src="../assets/plugins/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+        <script src="../assets/plugins/chartjs/chart.min.js"></script>
+        <script src="../assets/plugins/apexcharts/dist/apexcharts.min.js"></script>
+        <script src="../assets/plugins/toastr/toastr.min.js"></script>
+        <script src="../assets/js/lime.min.js"></script>
+        <script src="../assets/js/pages/dashboard.js"></script>
+        <script src="../assets/js/custom.js"></script>
+
     </body>
 </html>

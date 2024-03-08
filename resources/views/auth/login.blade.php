@@ -10,7 +10,7 @@
         <meta name="author" content="stacks">
         
         <!-- Title -->
-        <title>Lime - Responsive Admin Dashboard Template</title>
+        <title>Transgo</title>
 
         <!-- Styles -->
         <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
@@ -36,38 +36,24 @@
                         <div class="card login-box">
                             <div class="card-body">
                                 <h5 class="card-title">Login</h5>
-                                <form method="POST" action="{{ route('login') }}">
+                                @if (session('error'))
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    {{ session('error') }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            @endif
+                                    <form method="POST" action="{{ route('login') }}">
                                     @csrf                               
                                     <div class="form-group">
-                                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" aria-describedby="emailHelp" placeholder="Enter email" required autofocus>
-                                        @error('email')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
+                                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" aria-describedby="emailHelp" placeholder="Masukkan email" required autofocus>
                                     </div>
-                                
                                     <div class="form-group">
                                         <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-                                        @error('password')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
                                     </div>
-                                    
-                                
-                                    <div class="custom-control custom-checkbox form-group">
-                                        <input type="checkbox" class="custom-control-input" id="remember" name="remember">
-                                        <label class="custom-control-label" for="remember">Remember me</label>
-                                    </div>
-                                
-                                    @if ($errors->has('error'))
-                                        <div class="alert alert-danger">
-                                            {{ $errors->first('error') }}
-                                        </div>
-                                    @endif
-                                
-                                    <a href="#" class="float-left forgot-link">Forgot password?</a>
                                     <button class="btn btn-primary float-right m-l-xxs" type="submit">Login</button>
-                                </form>  
-                                                              
+                                </form>                      
                             </div>
                         </div>
                     </div>

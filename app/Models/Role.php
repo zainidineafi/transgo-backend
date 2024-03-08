@@ -2,22 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Models\Role as SpatieRole;
 
-class User extends Authenticatable
+class Role extends SpatieRole
 {
-    use HasFactory, Notifiable, HasRoles;
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'address', 'gender', 'phone_number', 'images'
+        'name', 'guard_name', // Contoh atribut yang dapat diisi sesuai kebutuhan Anda
     ];
 
     /**
@@ -26,7 +21,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password',
+        'pivot', 'permissions', // Anda dapat menambahkan atribut lain jika diperlukan
     ];
 
     /**
@@ -35,6 +30,9 @@ class User extends Authenticatable
      * @var array
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
+
+    // Tambahan logika atau metode lainnya dapat ditambahkan di sini
 }

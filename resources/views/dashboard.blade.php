@@ -40,13 +40,19 @@
                 <div class="col-md-4">
                     <div class="card stat-card">
                         <div class="card-body">
-                            <h5 class="card-title">New Customers</h5>
-                            <h2 class="float-right">45.6K</h2>
-                            <p>From last week</p>
+                            <h5 class="card-title">Total Admin</h5>
+                            @php
+                                // Mengambil jumlah total admin
+                                $totalAdmin = \App\Models\User::role('Admin')->count();
+                                // Menghitung persentase total admin dari seluruh pengguna
+                                $percentAdmin = $totalAdmin > 0 ? ($totalAdmin / \App\Models\User::count()) * 100 : 0;
+                            @endphp
+                            <h2 class="float-right">{{ $totalAdmin }}</h2>
                             <div class="progress" style="height: 10px;">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: 45%" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $percentAdmin }}%" aria-valuenow="{{ $percentAdmin }}" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
+                        
                     </div>
                 </div>
                 <div class="col-md-4">
