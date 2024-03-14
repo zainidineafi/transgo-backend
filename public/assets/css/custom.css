@@ -1,1 +1,30 @@
-/* Write your custom CSS here */
+.profile-image-container {
+    width: 200px; /* Sesuaikan dengan ukuran yang diinginkan */
+    height: 200px; /* Sesuaikan dengan ukuran yang diinginkan */
+    overflow: hidden; /* Menghindari gambar melebihi kontainer */
+    margin: 10px; /* Menambahkan jarak dengan card pinggir */
+}
+
+.profile-image {
+    width: 100%; /* Menyesuaikan lebar gambar dengan kontainer */
+    height: auto; /* Menyesuaikan tinggi gambar dengan kontainer */
+    display: block; /* Menjadikan gambar sebagai blok */
+}
+
+#deleteBtn {
+    display: none;
+}
+
+.match {
+    background-color: #c8e6c9; /* Warna hijau untuk cocok */
+}
+
+.mismatch {
+    background-color: #ffcdd2; /* Warna merah untuk tidak cocok */
+}
+
+
+  
+  
+  
+  

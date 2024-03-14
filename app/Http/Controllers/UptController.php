@@ -7,6 +7,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 
 class UptController extends Controller
@@ -14,20 +15,24 @@ class UptController extends Controller
     // Menampilkan daftar pengguna
     public function index()
     {
-        $upts = User::role('Upt')->get();
+        $upts = User::role('Upt')->paginate(10); // Menentukan 10 item per halaman
 
         return view('upts.index', compact('upts'));
     }
 
+
     public function search(Request $request)
     {
-        // Ambil nilai pencarian dari input form
         $searchTerm = $request->input('search');
 
-        // Lakukan pencarian UPT berdasarkan nama pada pengguna dengan peran 'Upt'
         $upts = User::role('Upt')
-            ->where('name', 'like', '%' . $searchTerm . '%')
-            ->get();
+            ->where(function ($query) use ($searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('address', 'like', '%' . $searchTerm . '%');
+            })
+            ->paginate(10);
+
+        return view('upts.index', compact('upts'));
     }
 
     // Menampilkan form untuk membuat pengguna baru
@@ -40,13 +45,13 @@ class UptController extends Controller
     // Menyimpan pengguna baru ke database
     public function store(Request $request)
     {
-        // Dapatkan nilai 'images' dari input
-        $images = $request->input('images');
-
-        // Periksa apakah 'images' tidak ada atau kosong
-        if (!$images) {
-            $images = 'default.jpg';
+        $image = $request->file('image');
+        if ($image) {
+            $imageName = $image->store('avatars');
+        } else {
+            $imageName = 'avatars/default.jpg';
         }
+
         // Validasi data yang diterima dari form
         $request->validate([
             'name' => 'required',
@@ -55,9 +60,8 @@ class UptController extends Controller
             'address' => 'required',
             'gender' => 'required',
             'phone_number' => 'required',
-
-            // Tambahkan validasi lain sesuai kebutuhan
         ]);
+
 
         // Simpan data pengguna baru ke dalam database
         $upt = User::create([
@@ -67,7 +71,7 @@ class UptController extends Controller
             'address' => $request->address,
             'gender' => $request->gender,
             'phone_number' => $request->phone_number,
-            'images' => $images,
+            'images' => $imageName,
             'created_at' => Carbon::now(),
 
         ]);
@@ -84,36 +88,92 @@ class UptController extends Controller
     public function edit($id)
     {
         $upt = User::findOrFail($id);
-        return view('upts.edit', compact('user'));
+        $roles = Role::all();
+        $genders = [
+            'male' => 'Laki-Laki',
+            'female' => 'Perempuan'
+        ];
+        return view('upts.edit', ['upt' => $upt, 'roles' => $roles, 'genders' => $genders]);
     }
 
-    // Menyimpan perubahan pada pengguna ke database
+
+    public function detail($id)
+    {
+        $upt = User::findOrFail($id);
+        $roles = Role::all();
+        $genders = [
+            'male' => 'Laki-Laki',
+            'female' => 'Perempuan'
+        ];
+        return view('upts.detail', ['upt' => $upt, 'roles' => $roles, 'genders' => $genders]);
+    }
+
+
+
     public function update(Request $request, $id)
     {
         // Validasi data yang diterima dari form
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $id,
-            // Tambahkan validasi lain sesuai kebutuhan
+            'password' => 'nullable|min:8',
+            'address' => 'required',
+            'gender' => 'required',
+            'phone_number' => 'required',
         ]);
 
-        // Temukan pengguna yang akan diperbarui dan simpan perubahan
-        $user = User::findOrFail($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        // Update atribut lain jika diperlukan
-        $user->save();
+        // Ambil data pengguna yang akan diupdate
+        $upt = User::findOrFail($id);
 
-        // Redirect ke halaman daftar pengguna
+        // Periksa apakah ada file gambar yang diunggah
+        if ($request->hasFile('image')) {
+            // Hapus gambar lama jika ada
+            Storage::delete($upt->images);
+
+            // Simpan file gambar baru ke dalam penyimpanan yang diinginkan
+            $imageName = $request->file('image')->store('avatars');
+
+            // Update nama file gambar dalam database
+            $upt->images = $imageName;
+        }
+
+        // Update data pengguna
+        $upt->name = $request->name;
+        $upt->email = $request->email;
+        if ($request->filled('password')) {
+            $upt->password = Hash::make($request->password);
+        }
+        $upt->address = $request->address;
+        $upt->gender = $request->gender;
+        $upt->phone_number = $request->phone_number;
+        $upt->save();
+
+        // Redirect ke halaman daftar pengguna dengan pesan sukses
         return redirect()->route('upts.index')->with('success', 'User updated successfully.');
     }
+
 
     // Menghapus pengguna dari database
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
         $user->delete();
         // Redirect ke halaman daftar pengguna
         return redirect()->route('upts.index')->with('success', 'User deleted successfully.');
+    }
+
+    public function multiDelete(Request $request)
+    {
+        // Validasi data yang diterima
+        $request->validate([
+            'ids' => 'required|array', // Pastikan ids adalah array
+            'ids.*' => 'exists:users,id', // Pastikan setiap id ada dalam basis data Anda
+        ]);
+
+        // Lakukan penghapusan data berdasarkan ID yang diterima
+        User::whereIn('id', $request->ids)->delete();
+
+        // Kirim respons sukses kembali ke klien
+        return response()->json(['success' => 'Records deleted successfully']);
     }
 }
