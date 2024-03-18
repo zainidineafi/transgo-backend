@@ -16,25 +16,30 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="name">Nama</label>
-                                            <input type="text" class="form-control" name="name" id="name" placeholder="Masukkan Nama" required>
+                                            <input type="text" class="form-control" name="name" id="name" placeholder="Masukkan Nama" required value="{{ old('name') }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="email">Email</label>
-                                            <input type="email" class="form-control" name="email" id="email" placeholder="Masukkan Email" required>
+                                            <input type="email"  class="form-control @error('email') is-invalid @enderror"  name="email" id="email" placeholder="Masukkan Email" required value="{{ old('email') }}">
+                                            @error('email')
+                                            <div class="invalid-feedback">Email sudah terpakai</div>
+                                        @enderror
                                             <div class="invalid-feedback" id="email-error-message" style="display: none;">
                                                 Email harus berakhiran @gmail.com
                                             </div>
+                                        
                                         </div>
                                     </div>
+                                    
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="password">Password</label>
                                             <div class="input-group">
-                                                <input type="password" class="form-control" name="password" id="password" placeholder="Masukkan Password" required minlength="8">
+                                                <input type="password" class="form-control" name="password" id="password" placeholder="Masukkan Password" required value="{{ old('password') }}" minlength="8">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">
                                                         <i id="togglePassword" class="fas fa-eye"></i>
@@ -64,15 +69,15 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="address">Alamat</label>
-                                            <input type="text" class="form-control" name="address" id="address" placeholder="Alamat" required>
+                                            <input type="text" class="form-control" name="address" id="address" placeholder="Alamat" required value="{{ old('address') }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="gender">Jenis Kelamin</label>
                                             <select class="js-states form-control" name="gender" id="gender" style="width: 100%">
-                                                <option value="Male">Pria</option>
-                                                <option value="Female">Perempuan</option>
+                                                <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Pria</option>
+                                                <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Perempuan</option>
                                             </select>
                                         </div>
                                     </div>
@@ -81,7 +86,10 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="phone_number">Nomor Handphone</label>
-                                            <input type="text" class="form-control" name="phone_number" id="phone_number" placeholder="Nomor Handphone" required maxlength="12">
+                                            <input type="text" class="form-control @error('phone_number') is-invalid @enderror" name="phone_number" id="phone_number" placeholder="Nomor Handphone" required value="{{ old('phone_number') }}" maxlength="12">
+                                            @error('phone_number')
+                                            <div class="invalid-feedback">Nomor Handphone sudah terpakai</div>
+                                        @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -95,14 +103,15 @@
                                         </div>
                                     </div>
                                 </div>
-                                                                          
-                                    <div class="form-group">
-                                        <label for="image">Avatar</label>
-                                        <div class="input-group">
-                                            <input class="form-control" type="file" name="image" id="image">
-                                        </div>
+                                <div class="form-group">
+                                    <label for="image">Avatar</label>
+                                    <div class="input-group">
+                                        <input class="form-control" type="file" name="image" id="image">
+                                        @if(old('image'))
+                                            <span class="input-group-text">{{ old('image') }}</span>
+                                        @endif
                                     </div>
-                                    
+                                </div>
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-primary float-left mr-2" data-toggle="modal" data-target="#exampleModal">
                                     Tambah
@@ -111,7 +120,6 @@
                                 <button type="button" class="btn btn-secondary float-left" data-toggle="modal" data-target="#exampleModalback">
                                     Kembali
                                 </button>
-
                                 <!-- Modal -->
                                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
@@ -154,6 +162,5 @@
         </div>
     </div>
 </div>
-
 
 @endsection
