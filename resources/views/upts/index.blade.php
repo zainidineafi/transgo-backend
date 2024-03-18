@@ -29,7 +29,7 @@
                                     <a href="{{ route('upts.create') }}" class="btn btn-outline-success mr-2" data-toggle="tooltip" data-placement="top" title="Tambah">
                                         <i class="fas fa-plus"></i>
                                     </a>
-                                    <a href="#" id="deleteAllSelectedRecord" class="btn btn-outline-danger" data-toggle="modal" data-target="#confirmationModal" data-url="{{ route('delete-all') }}" >
+                                    <a href="#" id="deleteAllSelectedRecord" class="btn btn-outline-danger" data-toggle="modal" data-target="#confirmationModal" data-url="{{ route('upts.destroy.multi') }}" >
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
                                 </div>

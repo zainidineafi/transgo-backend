@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Session;
 
 class UptController extends Controller
 {
@@ -51,7 +52,6 @@ class UptController extends Controller
         } else {
             $imageName = 'avatars/default.jpg';
         }
-
         // Validasi data yang diterima dari form
         $request->validate([
             'name' => 'required',
@@ -59,7 +59,7 @@ class UptController extends Controller
             'password' => 'required|min:8',
             'address' => 'required',
             'gender' => 'required',
-            'phone_number' => 'required',
+            'phone_number' => 'required|unique:users',
         ]);
 
 
@@ -81,7 +81,7 @@ class UptController extends Controller
         $upt->assignRole($role);
 
         // Redirect ke halaman daftar pengguna
-        return redirect()->route('upts.index')->with('success', 'User created successfully.');
+        return redirect()->route('upts.index')->with('message', 'Berhasil menambah data');
     }
 
     // Menampilkan form untuk mengedit pengguna
@@ -119,8 +119,9 @@ class UptController extends Controller
             'password' => 'nullable|min:8',
             'address' => 'required',
             'gender' => 'required',
-            'phone_number' => 'required',
+            'phone_number' => 'required|unique:users,phone_number,' . $id,
         ]);
+
 
         // Ambil data pengguna yang akan diupdate
         $upt = User::findOrFail($id);
@@ -149,20 +150,12 @@ class UptController extends Controller
         $upt->save();
 
         // Redirect ke halaman daftar pengguna dengan pesan sukses
-        return redirect()->route('upts.index')->with('success', 'User updated successfully.');
+        return redirect()->route('upts.index')->with('message', 'Berhasil mengubah data.');
     }
 
 
-    // Menghapus pengguna dari database
-    public function destroy($id)
-    {
-        $user = User::find($id);
-        $user->delete();
-        // Redirect ke halaman daftar pengguna
-        return redirect()->route('upts.index')->with('success', 'User deleted successfully.');
-    }
 
-    public function multiDelete(Request $request)
+    public function destroyMulti(Request $request)
     {
         // Validasi data yang diterima
         $request->validate([
@@ -173,7 +166,7 @@ class UptController extends Controller
         // Lakukan penghapusan data berdasarkan ID yang diterima
         User::whereIn('id', $request->ids)->delete();
 
-        // Kirim respons sukses kembali ke klien
-        return response()->json(['success' => 'Records deleted successfully']);
+        // Redirect ke halaman sebelumnya atau halaman lain yang sesuai
+        return redirect()->route('upts.index')->with('message', 'Berhasil menghapus data');
     }
 }

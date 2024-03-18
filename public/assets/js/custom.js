@@ -59,6 +59,7 @@ document.getElementById("email").addEventListener("input", function () {
     var errorMessage = document.getElementById("email-error-message");
 
     if (!emailPattern.test(emailInput)) {
+        errorMessage.innerText = "Email harus berakhiran @gmail.com";
         errorMessage.style.display = "block";
     } else {
         errorMessage.style.display = "none";
