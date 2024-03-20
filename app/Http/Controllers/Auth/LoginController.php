@@ -46,13 +46,15 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $user = User::find(Auth::user()->id);
 
+            // Simpan peran pengguna dalam sesi
+            session(['user_role' => $user->role]);
 
             if ($user->hasRole('Root')) {
                 // Jika peran pengguna adalah 'root', tampilkan halaman read upt
                 return redirect()->route('upts.index');
             } elseif ($user->hasRole('Upt')) {
                 // Jika peran pengguna adalah 'upt', tampilkan full dashboard
-                return redirect()->route('full_dashboard');
+                return redirect()->route('dashboard');
             } elseif ($user->hasRole('Admin')) {
                 // Jika peran pengguna adalah 'admin', tampilkan custom dashboard
                 return redirect()->route('dashboard');

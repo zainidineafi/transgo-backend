@@ -70,12 +70,9 @@ Route::get('/admins/{id}/detail', [AdminController::class, 'detail'])
 Route::put('/admins/{id}', [AdminController::class, 'update'])
     ->middleware('role:Upt')
     ->name('admins.update');
-Route::delete('/admins/{id}', [AdminController::class, 'destroy'])
+Route::post('/admins/delete', [AdminController::class, 'destroyMulti'])
     ->middleware('role:Upt')
-    ->name('admins.destroy');
-// Route::delete('/admins/delete-all', [AdminController::class, 'multiDelete'])
-//     ->middleware('role:Upt')
-//     ->name('admins.delete-all');
+    ->name('admins.destroy.multi');
 
 
 
