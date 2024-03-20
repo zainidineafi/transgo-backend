@@ -29,7 +29,6 @@
                                             <div class="invalid-feedback" id="email-error-message" style="display: none;">
                                                 Email harus berakhiran @gmail.com
                                             </div>
-                                        
                                         </div>
                                     </div>
                                     

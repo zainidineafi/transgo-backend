@@ -17,13 +17,19 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="name">Nama</label>
-                                            <input type="text" class="form-control" name="name" id="name" placeholder="Masukkan Nama" value="{{ $upt->name }}" required>
+                                            <input type="text" class="form-control" name="name" id="name" placeholder="Masukkan Nama" value="{{ old('name', $upt->name) }}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="email">Email</label>
-                                            <input type="email" class="form-control" name="email" id="email" placeholder="Masukkan Email" value="{{ $upt->email }}" required>
+                                            <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" id="email" placeholder="Masukkan Email" value="{{ old('email', $upt->email) }}" required>
+                                            @error('email')
+                                                <div class="invalid-feedback">Email sudah terpakai</div>
+                                            @enderror
+                                            <div class="invalid-feedback" id="email-error-message" style="display: none;">
+                                                Email harus berakhiran @gmail.com
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -62,7 +68,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="address">Alamat</label>
-                                            <input type="text" class="form-control" name="address" id="address" placeholder="Alamat" value="{{ $upt->address }}" required>
+                                            <input type="text" class="form-control" name="address" id="address" placeholder="Alamat" value="{{ old('address', $upt->address) }}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -70,7 +76,7 @@
                                             <label for="gender">Jenis Kelamin</label>
                                             <select class="js-states form-control" name="gender" id="gender" style="width: 100%">
                                                 @foreach ($genders as $key => $value)
-                                                    <option value="{{ $key }}" {{ $upt->gender == $key ? 'selected' : '' }}>{{ $value }}</option>
+                                                    <option value="{{ $key }}" {{ old('gender', $upt->gender) == $key ? 'selected' : '' }}>{{ $value }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -80,7 +86,10 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="phone_number">Nomor Handphone</label>
-                                            <input type="text" class="form-control" name="phone_number" id="phone_number" placeholder="Nomor Handphone" value="{{ $upt->phone_number }}" required>
+                                            <input type="text" class="form-control @error('phone_number') is-invalid @enderror" name="phone_number" id="phone_number" placeholder="Nomor Handphone" value="{{ old('phone_number', $upt->phone_number) }}" required maxlength="12">
+                                            @error('phone_number')
+                                            <div class="invalid-feedback">Nomor Handphone sudah terpakai</div>
+                                        @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -94,7 +103,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="form-group">
                                     <label for="image">Avatar</label>
                                     <div class="input-group">
@@ -110,7 +118,6 @@
                                 <button type="button" class="btn btn-secondary float-left" data-toggle="modal" data-target="#exampleModalback">
                                     Kembali
                                 </button>
-
                                 <!-- Modal -->
                                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">

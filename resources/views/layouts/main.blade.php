@@ -45,6 +45,7 @@
                     </a>
                 </section>
                 <a class="navbar-brand" href="{{ Auth::user()->hasRole('Root') ? route('upts.index') : route('dashboard') }}">Transgo</a>
+                
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="material-icons">keyboard_arrow_down</i>
                 </button>
@@ -92,13 +93,18 @@
         <script src="../../assets/plugins/chartjs/chart.min.js"></script>
         <script src="../../assets/plugins/apexcharts/dist/apexcharts.min.js"></script>
         <script src="../../assets/plugins/toastr/toastr.min.js"></script>
+        <script src="../../assets/js/pages/toastr.js"></script>
         <script src="../../assets/js/lime.min.js"></script>
         <script src="../../assets/js/pages/dashboard.js"></script>
         <script src="../../assets/js/custom.js"></script>
         <script src="../../assets/js/search.js"></script>
         <script src="../../assets/js/multi_del.js"></script>
-
-        
-
+        <!-- Tampilkan pesan flash jika ada -->
+            @if(session('message'))
+        <script>
+        // Tampilkan toastr dengan id toastsucces
+        toastr.success("{{ Session::get('message') }}");
+        </script>
+        @endif
     </body>
 </html>
