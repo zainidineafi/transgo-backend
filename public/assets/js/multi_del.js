@@ -48,7 +48,8 @@ $(function () {
                 alert("An error occurred while deleting records.");
             },
         });
-
+        // Cetak nilai all_ids ke konsol untuk memeriksa nilai yang dikirimkan
+        console.log(all_ids);
         // Tutup modal peringatan setelah melakukan request AJAX
         $("#confirmationModal").modal("hide");
     });

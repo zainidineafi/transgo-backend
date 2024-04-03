@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
@@ -16,8 +17,9 @@ class AdminController extends Controller
     // Menampilkan daftar pengguna
     public function index()
     {
-        $admins = User::role('Admin')->paginate(10); // Menentukan 10 item per halaman
-
+        // Mendapatkan ID pengguna yang sedang masuk
+        $userId = Auth::id();
+        $admins = User::role('Admin')->where('id_upt', $userId)->paginate(10);
         return view('admins.index', compact('admins'));
     }
 
@@ -62,6 +64,7 @@ class AdminController extends Controller
             'phone_number' => 'required|unique:users',
         ]);
 
+        $userId = Auth::id();
 
         // Simpan data pengguna baru ke dalam database
         $admin = User::create([
@@ -72,9 +75,13 @@ class AdminController extends Controller
             'gender' => $request->gender,
             'phone_number' => $request->phone_number,
             'images' => $imageName,
+            'id_upt' => $userId, // Menambahkan id_upt dari pengguna yang sedang masuk
             'created_at' => Carbon::now(),
-
         ]);
+
+        // Cetak variabel $admin
+        //dd($admin);
+
 
         // Beri peran 'Root' kepada pengguna baru
         $role = Role::findByName('Admin');
@@ -83,6 +90,7 @@ class AdminController extends Controller
         // Redirect ke halaman daftar pengguna
         return redirect()->route('admins.index')->with('message', 'Berhasil menambah data');
     }
+
 
     // Menampilkan form untuk mengedit pengguna
     public function edit($id)

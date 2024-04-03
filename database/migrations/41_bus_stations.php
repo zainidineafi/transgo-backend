@@ -17,10 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('address');
-            $table->foreignId('id_upt');
             $table->timestamps();
-
-            $table->foreign('id_upt')->references('id')->on('users');
         });
     }
 

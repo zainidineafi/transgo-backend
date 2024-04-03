@@ -19,8 +19,8 @@
         <link href="../../assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="../../assets/plugins/font-awesome/css/all.min.css" rel="stylesheet">
         <link href="../../assets/plugins/toastr/toastr.min.css" rel="stylesheet">  
+        <link href="../../assets/plugins/select2/css/select2.min.css" rel="stylesheet">  
 
-      
         <!-- Theme Styles -->
         <link href="../../assets/css/lime.min.css" rel="stylesheet">
         <link href="../../assets/css/custom.css" rel="stylesheet">
@@ -74,17 +74,11 @@
                 </div>
             </nav>
         </div>
-
-
+        
         <div class="lime-container">
             @yield('container')
         </div>
 
-       
-
-
-        
-        
         <!-- Javascripts -->
         <script src="../../assets/plugins/jquery/jquery-3.1.0.min.js"></script>
         <script src="../../assets/plugins/bootstrap/popper.min.js"></script>
@@ -93,18 +87,22 @@
         <script src="../../assets/plugins/chartjs/chart.min.js"></script>
         <script src="../../assets/plugins/apexcharts/dist/apexcharts.min.js"></script>
         <script src="../../assets/plugins/toastr/toastr.min.js"></script>
+        <script src="../../assets/plugins/select2/js/select2.full.min.js"></script>
+
         <script src="../../assets/js/pages/toastr.js"></script>
-        <script src="../../assets/js/lime.min.js"></script>
         <script src="../../assets/js/pages/dashboard.js"></script>
+        
+        <script src="../../assets/js/lime.min.js"></script>
+        <script src="../../assets/js/pages/select2.js"></script>
         <script src="../../assets/js/custom.js"></script>
         <script src="../../assets/js/search.js"></script>
+        <script src="../../assets/js/disabled.js"></script>
         <script src="../../assets/js/multi_del.js"></script>
-        <!-- Tampilkan pesan flash jika ada -->
             @if(session('message'))
-        <script>
-        // Tampilkan toastr dengan id toastsucces
+        <script>    
         toastr.success("{{ Session::get('message') }}");
         </script>
         @endif
+        
     </body>
 </html>

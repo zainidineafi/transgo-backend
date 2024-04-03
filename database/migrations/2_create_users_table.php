@@ -22,8 +22,10 @@ return new class extends Migration
             $table->enum('gender', ['male', 'female'])->nullable(false);
             $table->string('phone_number')->nullable(false);
             $table->string('images')->nullable(false);
-            $table->rememberToken();
+            $table->unsignedBigInteger('id_upt')->nullable();
             $table->timestamps();
+
+            $table->foreign('id_upt')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

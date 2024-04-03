@@ -19,7 +19,7 @@
                     <a href="{{ route('admins.index') }}"><i class="material-icons">person_outline</i>Management Admin</a>
                 </li>
                 <li>
-                    <a href=""><i class="material-icons">person_outline</i>Management Terminal</a>
+                    <a href="{{ route('bus_stations.index') }}"><i class="material-icons">person_outline</i>Management Terminal</a>
                 </li>
                 @endif
                 @if(auth()->check() && !auth()->user()->hasRole('Root'))

@@ -17,10 +17,10 @@ class AssignPermissionsSeeder extends Seeder
     public function run()
     {
         // Temukan pengguna dengan ID 1
-        $user = User::find(10);
+        $user = User::find(1);
 
         // Temukan peran 'Root' jika sudah ada
-        $adminRole = Role::where('name', 'Upt')->first();
+        $adminRole = Role::where('name', 'Root')->first();
 
         // Pastikan peran 'Root' ditemukan sebelum menetapkannya
         if ($adminRole) {
