@@ -25,26 +25,57 @@ class BusStationController extends Controller
 
     public function create()
     {
-        return view('bus_stations.create');
+        $userId = Auth::id();
+
+        // Fetch all admins who have the role 'Admin' and meet certain conditions
+        $admins = User::role('Admin')
+            ->whereDoesntHave('adminBusStations')
+            ->where('id_upt', $userId)
+            ->get();
+        // Pass the fetched data to the view
+        return view('bus_stations.create', compact('admins'));
     }
+
+
 
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string',
             'address' => 'required|string',
+            'admin' => 'nullable|array', // Bidang 'admin' bisa null atau array
+            // Validasi untuk memastikan bahwa setidaknya satu admin dipilih
         ]);
+
         $userId = Auth::id();
+
+        // Membuat stasiun bus baru
         $busStation = BusStation::create([
             'name' => $request->name,
             'address' => $request->address,
         ]);
+
+        // Menyimpan relasi antara admin (pengguna) yang sedang login dan stasiun bus yang baru dibuat
         UserBusStation::create([
             'user_id' => $userId,
             'bus_station_id' => $busStation->id,
         ]);
+
+        // Menyimpan relasi antara admin yang dipilih dan stasiun bus yang baru dibuat
+        if ($request->filled('admin')) {
+            foreach ($request->admin as $adminId) {
+                AdminBusStation::create([
+                    'user_id' => $adminId,
+                    'bus_station_id' => $busStation->id,
+                ]);
+            }
+        }
+
+
+        // Redirect kembali ke halaman indeks stasiun bus dengan pesan sukses
         return redirect()->route('bus_stations.index')->with('message', 'Berhasil menambah data');
     }
+
 
     public function detail($id)
     {
@@ -52,15 +83,20 @@ class BusStationController extends Controller
         $busStation = BusStation::findOrFail($id);
         $adminBusStations = AdminBusStation::where('bus_station_id', $busStation->id)->get();
         $selectedAdmins = $adminBusStations->pluck('user_id')->toArray();
+
         $admins = User::role('Admin')
-            ->whereHas('adminBusStations', function ($query) use ($busStation) {
-                $query->where('bus_station_id', $busStation->id);
+            ->where(function ($query) use ($busStation) {
+                $query->whereHas('adminBusStations', function ($query) use ($busStation) {
+                    $query->where('bus_station_id', $busStation->id);
+                })->orWhereDoesntHave('adminBusStations');
             })
-            ->orWhereDoesntHave('adminBusStations')
-            ->where('id_upt', $userId) // Menambahkan kondisi di sini
+            ->where('id_upt', $userId)
             ->get();
+
+
         return view('bus_stations.detail', compact('busStation', 'admins', 'selectedAdmins'));
     }
+
     public function edit($id)
     {
         $busStation = BusStation::findOrFail($id);
@@ -71,8 +107,17 @@ class BusStationController extends Controller
     {
         $busStation = BusStation::findOrFail($id);
         $request->validate([
-            // Tentukan aturan validasi di sini sesuai kebutuhan Anda
+            'name' => 'required|string',
+            'address' => 'required|string',
+            'admin' => 'nullable|array', // Bidang 'admin' bisa null atau array
+            // Validasi untuk memastikan bahwa setidaknya satu admin dipilih
         ]);
+
+        $busStation->name = $request->name;
+        $busStation->address = $request->address;
+
+
+        $busStation->save();
 
         $previousAdmins = $busStation->admins()->pluck('user_id')->toArray();
         if ($request->has('id_admin')) {

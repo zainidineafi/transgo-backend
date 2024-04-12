@@ -8,12 +8,12 @@
                 <div class="col-xl">
                     <div class="card">
                         <div class="card-body">
-                            <h2 class="card-title mb-4" style="font-size: 20px;">Tabel Data Admin</h2>
+                            <h2 class="card-title mb-4" style="font-size: 20px;">Tabel Data Kondektur</h2>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <form action="{{ route('admins.search') }}" method="GET">
+                                    <form action="{{ route('bus_conductors.search') }}" method="GET">
                                         <div class="input-group">
-                                            <input type="text" class="form-control" name="search" id="searchInput" placeholder="Masukkan Nama Admin" value="" size="30">
+                                            <input type="text" class="form-control" name="search" id="searchInput" placeholder="Masukkan Nama Kondektur" value="" size="30">
                                             <div class="input-group-append">
                                                 <button class="btn btn-primary" type="submit">
                                                     <i class="fas fa-search"></i>
@@ -23,13 +23,13 @@
                                     </form>
                                 </div>
                                 <div class="d-flex">
-                                    <a href="{{ route('admins.index') }}" id="refreshPage" class="btn btn-outline-info mr-2" data-toggle="tooltip" data-placement="top" title="Segarkan">
+                                    <a href="{{ route('bus_conductors.index') }}" id="refreshPage" class="btn btn-outline-info mr-2" data-toggle="tooltip" data-placement="top" title="Segarkan">
                                         <i class="fas fa-sync-alt mr-1"></i>
                                     </a>                                    
-                                    <a href="{{ route('admins.create') }}" class="btn btn-outline-success mr-2" data-toggle="tooltip" data-placement="top" title="Tambah">
+                                    <a href="{{ route('bus_conductors.create') }}" class="btn btn-outline-success mr-2" data-toggle="tooltip" data-placement="top" title="Tambah">
                                         <i class="fas fa-plus"></i>
                                     </a>
-                                    <a href="#" id="deleteAllSelectedRecord" class="btn btn-outline-danger" data-toggle="modal" data-target="#confirmationModal" data-url="{{ route('admins.destroy.multi') }}" >
+                                    <a href="#" id="deleteAllSelectedRecord" class="btn btn-outline-danger" data-toggle="modal" data-target="#confirmationModal" data-url="{{ route('bus_conductors.destroy.multi') }}" >
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
                                 </div>
@@ -66,43 +66,40 @@
                                         <th>Alamat</th>
                                         <th>Jenis Kelamin</th>
                                         <th>Nomor Handphone</th>
-                                        <th>Penempatan</th>
                                         <th>Tanggal Bergabung</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if ($admins->isEmpty())
+                                    @if ($bus_conductors->isEmpty())
                                         <tr>
                                             <td colspan="9" class="text-center">Data kosong atau tidak ada data</td>
                                         </tr>
                                     @else
-                                    @foreach($admins as $admin)
-                                    <tr class="text-center" id = "upt_ids{{ $admin ->id }}">
-                                        <td><input type="checkbox" name="ids[]" class="checkbox_ids" id="{{ $admin->id }}" value="{{ $admin->id }}"></td>
-                                        <td>{{ $admin->id }}</td>
-                                        <td>{{ $admin->name }}</td>
-                                        <td>{{ $admin->email }}</td>
-                                        <td>{{ $admin->address }}</td>
+                                    @foreach($bus_conductors as $bus_conductor)
+                                    <tr class="text-center" id = "upt_ids{{ $bus_conductor ->id }}">
+                                        <td><input type="checkbox" name="ids" class = "checkbox_ids" id ="{{ $bus_conductor->id }}" value="{{ $bus_conductor->id }}"></td>
+                                        <td>{{ $bus_conductor->id }}</td>
+                                        <td>{{ $bus_conductor->name }}</td>
+                                        <td>{{ $bus_conductor->email }}</td>
+                                        <td>{{ $bus_conductor->address }}</td>
                                         <td>
-                                            @if ($admin->gender === 'male')
+                                            @if ($bus_conductor->gender === 'male')
                                                 Laki-laki
-                                            @elseif ($admin->gender === 'female')
+                                            @elseif ($bus_conductor->gender === 'female')
                                                 Perempuan
                                             @endif
                                         </td>
-                                        <td>{{ $admin->phone_number }}</td>
-                                        <td>{{ $admin->terminal_name ?: '-' }}</td> 
-                                        <td>{{ $admin->created_at->format('d-m-Y') }}<br>{{ $admin->created_at->format('H:i:s') }}</td>
-
+                                        <td>{{ $bus_conductor->phone_number }}</td>
+                                        <td>{{ $bus_conductor->created_at->format('d-m-Y') }}<br>{{ $bus_conductor->created_at->format('H:i:s') }}</td>
                                         <td>
                                             <div class="btn-group" role="group" aria-label="Basic example">
-                                                <a href="{{ route('admins.detail', $admin->id) }}" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="Detail">
+                                                <a href="{{ route('bus_conductors.detail', $bus_conductor->id) }}" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="Detail">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                             </div>
                                             <div class="btn-group" role="group" aria-label="Basic example">
-                                                <a href="{{ route('admins.edit', $admin->id) }}" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Ubah">
+                                                <a href="{{ route('bus_conductors.edit', $bus_conductor->id) }}" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Ubah">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                             </div>
@@ -116,20 +113,20 @@
 
                         <nav aria-label="Page navigation example">
                             <ul class="pagination justify-content-center">
-                                @if ($admins->previousPageUrl())
-                                    <li class="page-item"><a class="page-link" href="{{ $admins->previousPageUrl() }}">Kembali</a></li>
+                                @if ($bus_conductors->previousPageUrl())
+                                    <li class="page-item"><a class="page-link" href="{{ $bus_conductors->previousPageUrl() }}">Kembali</a></li>
                                 @else
                                     <li class="page-item disabled"><span class="page-link">Kembali</span></li>
                                 @endif
                         
-                                @for ($i = 1; $i <= $admins->lastPage(); $i++)
-                                    <li class="page-item {{ $admins->currentPage() == $i ? 'active' : '' }}">
-                                        <a class="page-link" href="{{ $admins->url($i) }}">{{ $i }}</a>
+                                @for ($i = 1; $i <= $bus_conductors->lastPage(); $i++)
+                                    <li class="page-item {{ $bus_conductors->currentPage() == $i ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ $bus_conductors->url($i) }}">{{ $i }}</a>
                                     </li>
                                 @endfor
                         
-                                @if ($admins->nextPageUrl())
-                                    <li class="page-item"><a class="page-link" href="{{ $admins->nextPageUrl() }}">Berikutnya</a></li>
+                                @if ($bus_conductors->nextPageUrl())
+                                    <li class="page-item"><a class="page-link" href="{{ $bus_conductors->nextPageUrl() }}">Berikutnya</a></li>
                                 @else
                                     <li class="page-item disabled"><span class="page-link">Berikutnya</span></li>
                                 @endif

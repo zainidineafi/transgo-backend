@@ -88,21 +88,24 @@
         <script src="../../assets/plugins/apexcharts/dist/apexcharts.min.js"></script>
         <script src="../../assets/plugins/toastr/toastr.min.js"></script>
         <script src="../../assets/plugins/select2/js/select2.full.min.js"></script>
-
         <script src="../../assets/js/pages/toastr.js"></script>
         <script src="../../assets/js/pages/dashboard.js"></script>
-        
         <script src="../../assets/js/lime.min.js"></script>
         <script src="../../assets/js/pages/select2.js"></script>
         <script src="../../assets/js/custom.js"></script>
         <script src="../../assets/js/search.js"></script>
         <script src="../../assets/js/disabled.js"></script>
         <script src="../../assets/js/multi_del.js"></script>
+        
+        <script src="../../assets/js/status.js"></script>
+        <script src="../../assets/js/select.js"></script>
             @if(session('message'))
         <script>    
         toastr.success("{{ Session::get('message') }}");
         </script>
         @endif
+        
+        
         
     </body>
 </html>

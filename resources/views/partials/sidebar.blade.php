@@ -24,13 +24,13 @@
                 @endif
                 @if(auth()->check() && !auth()->user()->hasRole('Root'))
                 <li>
-                    <a href=""><i class="material-icons">person_outline</i>Management Sopir</a>
+                    <a href="{{ route('drivers.index') }}"><i class="material-icons">person_outline</i>Management Sopir</a>
                 </li>
                 <li>
-                    <a href=""><i class="material-icons">person_outline</i>Management Kondektur</a>
+                    <a href="{{ route('bus_conductors.index') }}"><i class="material-icons">person_outline</i>Management Kondektur</a>
                 </li>
                 <li>
-                    <a href=""><i class="material-icons">person_outline</i>Management Bus</a>
+                    <a href="{{ route('busses.index') }}"><i class="material-icons">person_outline</i>Management Bus</a>
                 </li>
                 <li>
                     <a href=""><i class="material-icons">person_outline</i>Jadwal</a>

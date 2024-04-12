@@ -79,17 +79,3 @@ function deleteImage() {
     // Reset nilai input file
     document.getElementById("image").value = "";
 }
-
-$(document).ready(function () {
-    $("#editButton").click(function () {
-        $("#name, #address").prop("disabled", false);
-        $("#editButton").hide();
-        $("#cancelButton").show();
-    });
-
-    $("#cancelButton").click(function () {
-        $("#name, #address").prop("disabled", true);
-        $("#editButton").show();
-        $("#cancelButton").hide();
-    });
-});

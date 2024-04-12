@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('user_bus_station', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id'); // Menghapus constraint unique
+            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('bus_station_id');
             $table->timestamps();
 

@@ -45,7 +45,6 @@
                                                 @endif
                                             @endforeach
                                         </select>
-                                                                                   
                                         <div class="input-group-append">
                                             <span class="ml-2 text-primary" style="font-size: 12px; cursor: pointer;" onclick="location.href='{{ route('admins.create') }}'">
                                                 klik disini untuk menambah admin
@@ -53,10 +52,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                
-                                
-                                
-                                
                                 
                                 <!-- Button trigger modal -->
                                 <button id="saveButton" type="button" class="btn btn-success float-left mr-2" data-toggle="modal" data-target="#exampleModal" style="display: none;">

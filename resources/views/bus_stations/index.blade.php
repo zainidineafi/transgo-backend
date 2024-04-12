@@ -13,7 +13,7 @@
                                 <a href="{{ route('bus_stations.create') }}" class="btn btn-outline-success ml-auto" data-toggle="tooltip" data-placement="top" title="Tambah">
                                     <i class="fas fa-plus"></i>
                                 </a>
-                                <a href="#" id="deleteBusStationsButton" class="btn btn-outline-danger ml-2" data-toggle="modal" data-target="#confirmationModal" data-url="{{ route('bus_stations.destroy.multi') }}">
+                                <a href="#" id="deleteAllSelectedRecord" class="btn btn-outline-danger ml-2" data-toggle="modal" data-target="#confirmationModal" data-url="{{ route('bus_stations.destroy.multi') }}">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
                             </div>
@@ -60,8 +60,6 @@
                                 @endif
                             </div>
                         </div>
-                        
-
                         </div>
                     </div>
                 </div>

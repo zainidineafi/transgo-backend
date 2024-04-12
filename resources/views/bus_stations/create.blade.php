@@ -24,6 +24,24 @@
                                         <textarea class="form-control" name="address" id="address" placeholder="Alamat" required></textarea>
                                     </div>
                                 </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="admin">Admin</label>
+                                        <select class="js-states form-control" name="admin[]" id="admin" style="width: 100%" multiple="multiple">
+                                            @if($admins->isEmpty())
+                                            <option disabled selected>Belum Ada Admin</option>
+                                        @endif
+                                            @foreach($admins as $admin)
+                                                    <option value="{{ $admin->id }}">{{ $admin->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="input-group-append">
+                                            <span class="ml-2 text-primary" style="font-size: 12px; cursor: pointer;" onclick="location.href='{{ route('admins.create') }}'">
+                                                klik disini untuk menambah admin
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-primary float-left mr-2" data-toggle="modal" data-target="#exampleModal">
                                     Tambah

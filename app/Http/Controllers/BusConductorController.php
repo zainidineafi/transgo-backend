@@ -10,43 +10,37 @@ use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 
-class AdminController extends Controller
+class BusConductorController extends Controller
 {
     // Menampilkan daftar pengguna
     public function index()
     {
         // Mendapatkan ID pengguna yang sedang masuk
         $userId = Auth::id();
-        $admins = User::role('Admin')
-            ->leftJoin('admin_bus_station', 'users.id', '=', 'admin_bus_station.user_id')
-            ->leftJoin('bus_stations', 'admin_bus_station.bus_station_id', '=', 'bus_stations.id')
-            ->select('users.*', 'bus_stations.name as terminal_name')
-            ->paginate(10);
-        return view('admins.index', compact('admins'));
+        $bus_conductors = User::role('Bus_Conductor')->where('id_upt', $userId)->paginate(10);
+        return view('bus_conductors.index', compact('bus_conductors'));
     }
 
 
     public function search(Request $request)
     {
-        $userId = Auth::id();
         $searchTerm = $request->input('search');
 
-        $admins = User::role('Admin')
+        $bus_conductors = User::role('Bus_Conductor')
             ->where(function ($query) use ($searchTerm) {
                 $query->where('name', 'like', '%' . $searchTerm . '%')
                     ->orWhere('address', 'like', '%' . $searchTerm . '%');
             })
-            ->where('id_upt', $userId)
             ->paginate(10);
 
-        return view('admins.index', compact('admins'));
+        return view('bus_conductors.index', compact('bus_conductors'));
     }
 
     // Menampilkan form untuk membuat pengguna baru
     public function create()
     {
         $roles = Role::all();
-        return view('admins.create', ['roles' => $roles]);
+        return view('bus_conductors.create', ['roles' => $roles]);
     }
 
     // Menyimpan pengguna baru ke database
@@ -71,7 +65,7 @@ class AdminController extends Controller
         $userId = Auth::id();
 
         // Simpan data pengguna baru ke dalam database
-        $admin = User::create([
+        $bus_conductor = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -86,38 +80,37 @@ class AdminController extends Controller
         // Cetak variabel $admin
         //dd($admin);
 
-
         // Beri peran 'Root' kepada pengguna baru
-        $role = Role::findByName('Admin');
-        $admin->assignRole($role);
+        $role = Role::findByName('Bus_Conductor');
+        $bus_conductor->assignRole($role);
 
         // Redirect ke halaman daftar pengguna
-        return redirect()->route('admins.index')->with('message', 'Berhasil menambah data');
+        return redirect()->route('bus_conductors.index')->with('message', 'Berhasil menambah data');
     }
 
 
     // Menampilkan form untuk mengedit pengguna
     public function edit($id)
     {
-        $admin = User::findOrFail($id);
+        $bus_conductor = User::findOrFail($id);
         $roles = Role::all();
         $genders = [
             'male' => 'Laki-Laki',
             'female' => 'Perempuan'
         ];
-        return view('admins.edit', ['admin' => $admin, 'roles' => $roles, 'genders' => $genders]);
+        return view('bus_conductors.edit', ['bus_conductor' => $bus_conductor, 'roles' => $roles, 'genders' => $genders]);
     }
 
 
     public function detail($id)
     {
-        $admin = User::findOrFail($id);
+        $bus_conductor = User::findOrFail($id);
         $roles = Role::all();
         $genders = [
             'male' => 'Laki-Laki',
             'female' => 'Perempuan'
         ];
-        return view('admins.detail', ['admin' => $admin, 'roles' => $roles, 'genders' => $genders]);
+        return view('bus_conductors.detail', ['bus_conductor' => $bus_conductor, 'roles' => $roles, 'genders' => $genders]);
     }
 
 
@@ -136,33 +129,33 @@ class AdminController extends Controller
 
 
         // Ambil data pengguna yang akan diupdate
-        $admin = User::findOrFail($id);
+        $bus_conductor = User::findOrFail($id);
 
         // Periksa apakah ada file gambar yang diunggah
         if ($request->hasFile('image')) {
             // Hapus gambar lama jika ada
-            Storage::delete($admin->images);
+            Storage::delete($bus_conductor->images);
 
             // Simpan file gambar baru ke dalam penyimpanan yang diinginkan
             $imageName = $request->file('image')->store('avatars');
 
             // Update nama file gambar dalam database
-            $admin->images = $imageName;
+            $bus_conductor->images = $imageName;
         }
 
         // Update data pengguna
-        $admin->name = $request->name;
-        $admin->email = $request->email;
+        $bus_conductor->name = $request->name;
+        $bus_conductor->email = $request->email;
         if ($request->filled('password')) {
-            $admin->password = Hash::make($request->password);
+            $bus_conductor->password = Hash::make($request->password);
         }
-        $admin->address = $request->address;
-        $admin->gender = $request->gender;
-        $admin->phone_number = $request->phone_number;
-        $admin->save();
+        $bus_conductor->address = $request->address;
+        $bus_conductor->gender = $request->gender;
+        $bus_conductor->phone_number = $request->phone_number;
+        $bus_conductor->save();
 
         // Redirect ke halaman daftar pengguna dengan pesan sukses
-        return redirect()->route('admins.index')->with('message', 'Berhasil mengubah data.');
+        return redirect()->route('bus_conductors.index')->with('message', 'Berhasil mengubah data.');
     }
 
 
@@ -179,6 +172,6 @@ class AdminController extends Controller
         User::whereIn('id', $request->ids)->delete();
 
         // Redirect ke halaman sebelumnya atau halaman lain yang sesuai
-        return redirect()->route('admins.index')->with('message', 'Berhasil menghapus data');
+        return redirect()->route('bus_conductor.index')->with('message', 'Berhasil menghapus data');
     }
 }

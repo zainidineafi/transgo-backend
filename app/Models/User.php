@@ -47,4 +47,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(AdminBusStation::class);
     }
+
+    public function driveconduc()
+    {
+        return $this->hasMany(DriverConductorBus::class, 'bus_id');
+    }
+
+    public function driverBus()
+    {
+        return $this->hasMany(DriverConductorBus::class, 'driver_id');
+    }
+
+    public function ConductorBus()
+    {
+        return $this->hasMany(DriverConductorBus::class, 'bus_conductor_id');
+    }
 }
