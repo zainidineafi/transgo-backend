@@ -12,14 +12,28 @@ use Illuminate\Support\Facades\Auth;
 
 class DriverController extends Controller
 {
-    // Menampilkan daftar pengguna
     public function index()
     {
-        // Mendapatkan ID pengguna yang sedang masuk
-        $userId = Auth::id();
-        $drivers = User::role('Driver')->where('id_upt', $userId)->paginate(10);
-        return view('drivers.index', compact('drivers'));
+        // Pastikan pengguna telah diautentikasi
+        if (Auth::check()) {
+            // Ambil peran pengguna yang masuk
+            $user = Auth::user();
+            // Periksa apakah pengguna memiliki peran Upt atau Admin
+            if ($user->hasRole('Upt') || $user->hasRole('Admin')) {
+                // Tentukan ID Upt yang akan digunakan dalam kueri
+
+                $uptId = $user->hasRole('Upt') ? $user->id : ($user->hasRole('Admin') ? $user->id_upt : null);
+
+                // Ambil data pengguna dengan peran Driver terkait dengan Upt yang sesuai
+                $drivers = User::role('Driver')->where('id_upt', $uptId)->paginate(10);
+
+                // Kembalikan tampilan dengan data pengguna (drivers)
+                return view('drivers.index', compact('drivers'));
+            }
+        }
     }
+
+
 
 
     public function search(Request $request)

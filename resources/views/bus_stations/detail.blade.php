@@ -91,7 +91,7 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                <a href="{{ route('admins.index') }}" class="btn btn-primary">Ya, Kembali</a>
+                                                <a href="{{ route('bus_stations.index') }}" class="btn btn-primary">Ya, Kembali</a>
                                             </div>
                                         </div>
                                     </div>

@@ -24,7 +24,7 @@ class LoginController extends Controller
             // Jika pengguna sudah terotentikasi, arahkan mereka ke dashboard
             if (Auth::user()->hasRole('Root')) {
                 return redirect()->route('upts.index');
-            } elseif (Auth::user()->hasRole('Admin')) {
+            } elseif (Auth::user()->hasAnyRole(['Upt', 'Admin'])) {
                 return redirect()->route('dashboard');
             }
         }

@@ -8,7 +8,7 @@
                 <div class="col-xl">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Edit Sopit</h5>
+                            <h5 class="card-title">Edit Bus</h5>
                             <p>Ubah data sesuai kebutuhan</p>
                             <form method="POST" action="{{ route('busses.update', $bus->id) }}" enctype="multipart/form-data">
                                 @csrf    
@@ -24,7 +24,10 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="license_plate_number">Nomor Polisi Kendaraaan</label>
-                                        <input type="text" class="form-control" name="license_plate_number" id="license_plate_number" placeholder="Masukkan Nomor Polisi Kendaraan" required value="{{ old('license_plate_number', $bus->license_plate_number) }}">
+                                        <input type="text" class="form-control @error('license_plate_number') is-invalid @enderror"  name="license_plate_number" id="license_plate_number" placeholder="Masukkan Nomor Polisi Kendaraan" required value="{{ old('license_plate_number', $bus->license_plate_number) }}">
+                                        @error('license_plate_number')
+                                                <div class="invalid-feedback">Nomor Plat Kendaraan sudah terpakai</div>
+                                            @enderror
                                     </div>
                                 </div>
                             </div>
@@ -33,7 +36,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="chair">Kursi</label>
-                                        <input type="text" class="form-control" name="chair" id="chair" placeholder="Masukkan Kursi" required value="{{ old('chair', $bus->chair) }}">
+                                        <input oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" type = "number" maxlength = "2" class="form-control" name="chair" id="chair"  placeholder="Masukkan Kursi" required value="{{ $bus->chair ?? old('chair') }}">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -49,13 +52,6 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="price">Harga</label>
-                                        <input type="text" class="form-control" name="price" id="price" placeholder="Masukkan Harga" required value="{{ old('price', $bus->price) }}">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-group">
                                         <label for="status">Status</label>
                                         <select class="js-states form-control" name="status" id="status" style="width: 100%" onchange="showKeterangan()" required>
                                             <option value="1" {{ old('status', $bus->status) == '1' ? 'selected' : '' }}>Belum Berangkat</option>
@@ -64,6 +60,17 @@
                                             <option value="4" {{ old('status', $bus->status) == '4' ? 'selected' : '' }}>Terkendala</option>
                                             <option value="5" {{ old('status', $bus->status) == '5' ? 'selected' : '' }}>Tiba di Tujuan</option>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="image">Avatar</label>
+                                            <div class="input-group">
+                                                <input class="form-control" type="file" name="image" id="image">
+                                            @if(old('image'))
+                                                <span class="input-group-text">{{ old('image') }}</span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -76,25 +83,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="image">Avatar</label>
-                                                <div class="input-group">
-                                                    <input class="form-control" type="file" name="image" id="image">
-                                                @if(old('image'))
-                                                    <span class="input-group-text">{{ old('image') }}</span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                            </div>
-
                                 <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="drivers">Sopir</label>
-                                        <select class="js-states form-control" name="drivers[]" id="drivers" style="width: 100%" multiple="multiple" title="Pilih satu atau lebih sopir">
+                                        <select class="js-states form-control" name="drivers[]" id="drivers" style="width: 100%"  title="Pilih satu atau lebih sopir">
                                             @if($drivers->isEmpty())
                                             <option disabled selected>Belum Ada Sopir</option>
                                             @endif
@@ -106,17 +99,19 @@
                                             @endif
                                             @endforeach
                                         </select>
+                                        @if (Auth::user()->hasRole('Upt'))
                                         <div class="input-group-append">
                                             <span class="ml-2 text-primary" style="font-size: 12px; cursor: pointer;" onclick="location.href='{{ route('drivers.create') }}'">
                                                 klik disini untuk menambah Sopir
                                             </span>
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="bus_conductors">Kondektur</label>
-                                        <select class="js-states form-control" name="bus_conductors[]" id="bus_conductors" style="width: 100%" multiple="multiple" title="Pilih satu atau lebih kondektur">
+                                        <select class="js-states form-control" name="bus_conductors[]" id="bus_conductors" style="width: 100%"  title="Pilih satu atau lebih kondektur">
                                             @if($bus_conductors->isEmpty())
                                             <option disabled selected>Belum Ada Kondektur</option>
                                             @endif
@@ -128,11 +123,13 @@
                                             @endif
                                             @endforeach
                                         </select>
+                                        @if (Auth::user()->hasRole('Upt'))
                                         <div class="input-group-append">
                                             <span class="ml-2 text-primary" style="font-size: 12px; cursor: pointer;" onclick="location.href='{{ route('bus_conductors.create') }}'">
                                                 klik disini untuk menambah Kondektur
                                             </span>
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

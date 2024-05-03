@@ -8,25 +8,70 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserBusStation;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use SebastianBergmann\CodeCoverage\Driver\Driver;
 
 class BussesController extends Controller
 {
-    // Menampilkan daftar bus milik pengguna yang sedang login
     public function index()
     {
-        // Mendapatkan ID pengguna yang sedang login
-        $userId = Auth::id();
+        // Pastikan pengguna telah diautentikasi
+        if (Auth::check()) {
+            // Ambil peran pengguna yang masuk
+            $user = Auth::user();
+            // Periksa apakah pengguna memiliki peran Upt atau Admin
+            if ($user->hasRole('Upt') || $user->hasRole('Admin')) {
+                // Tentukan ID Upt yang akan digunakan dalam kueri
+                $uptId = $user->hasRole('Upt') ? $user->id : ($user->hasRole('Admin') ? $user->id_upt : null);
 
-        // Mengambil semua data bus yang dimiliki oleh pengguna yang sedang login
-        $busses = Buss::where('id_upt', $userId)->paginate(10);
+                $busses = DB::table('busses')
+                    ->leftJoin('driver_conductor_bus', 'busses.id', '=', 'driver_conductor_bus.bus_id')
+                    ->leftJoin('users as drivers', 'driver_conductor_bus.driver_id', '=', 'drivers.id')
+                    ->leftJoin('users as conductors', 'driver_conductor_bus.bus_conductor_id', '=', 'conductors.id')
+                    ->select(
+                        'busses.*',
+                        'drivers.name as driver_name',
+                        'conductors.name as conductor_name'
+                    )
+                    ->where('busses.id_upt', $uptId) // Menambahkan kondisi untuk ID Upt
+                    ->orderBy('busses.id', 'asc') // Mengatur urutan berdasarkan ID secara ascending
+                    ->paginate(10);
 
-        // Mengembalikan data tersebut ke view
-        return view('busses.index', compact('busses'));
+                // Mengembalikan data tersebut ke view
+                return view('busses.index', compact('busses'));
+            }
+        }
+    }
+
+    public function search(Request $request)
+    {
+        // Pastikan pengguna telah diautentikasi
+        if (Auth::check()) {
+            // Ambil peran pengguna yang masuk
+            $user = Auth::user();
+            // Periksa apakah pengguna memiliki peran Upt atau Admin
+            if ($user->hasRole('Upt') || $user->hasRole('Admin')) {
+                // Tentukan ID Upt yang akan digunakan dalam kueri
+                $uptId = $user->hasRole('Upt') ? $user->id : ($user->hasRole('Admin') ? $user->id_upt : null);
+
+                $searchTerm = $request->input('search');
+
+                $busses = Buss::where(function ($query) use ($searchTerm) {
+                    $query->where('name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('license_plate_number', 'like', '%' . $searchTerm . '%');
+                })
+                    ->where('id_upt', $uptId) // Menambahkan kondisi id_upt
+                    ->paginate(10);
+
+                return view('busses.index', compact('busses'));
+            }
+        }
     }
 
     public function create()
@@ -51,25 +96,30 @@ class BussesController extends Controller
 
     public function store(Request $request)
     {
-        $image = $request->file('image');
-        if ($image) {
-            $imageName = $image->store('avatars');
-        } else {
-            $imageName = 'avatars/default.jpg';
-        }
+        $bus_license = Buss::where('license_plate_number', $request->input('license_plate_number'))->first();
 
+        //dd($bus_license);
         // Validasi data yang diterima dari formulir
         $request->validate([
             'name' => 'required',
-            'license_plate_number' => 'required',
+            'license_plate_number' => [
+                'required',
+                Rule::unique('busses')->ignore($bus_license ? $bus_license->id : null),
+            ],
             'chair' => 'required',
             'class' => 'required',
-            'price' => 'required',
             'status' => 'required', // Menambahkan validasi untuk status
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'drivers' => 'nullable|array',
             'bus_conductors' => 'nullable|array',
         ]);
+
+        $image = $request->file('image');
+
+        if ($image) {
+            $imageName = $image->store('avatars');
+        } else {
+            $imageName = 'avatars/default_bus.png';
+        }
 
         $userId = Auth::id();
 
@@ -78,7 +128,6 @@ class BussesController extends Controller
             'license_plate_number' => $request->license_plate_number,
             'chair' => $request->chair,
             'class' => $request->class,
-            'price' => $request->price,
             'status' => $request->status, // Menambahkan status dari formulir
             'information' => $request->status == 4 ? $request->keterangan : null, // Menambahkan keterangan jika status adalah 4 (Terkendala)
             'images' => $imageName,
@@ -105,26 +154,53 @@ class BussesController extends Controller
     }
 
 
-    public function search(Request $request)
+
+
+
+    public function detail($id)
     {
-        $userId = Auth::id();
-        $searchTerm = $request->input('search');
+        $user = Auth::user();
+        $userId = $user->hasRole('Upt') ? $user->id : ($user->hasRole('Admin') ? $user->id_upt : null);
+        //$userId = Auth::id();
+        $bus = Buss::findOrFail($id);
+        $driveconduc = DriverConductorBus::where('bus_id', $bus->id)->get();
 
-        $busses = Buss::where(function ($query) use ($searchTerm) {
-            $query->where('name', 'like', '%' . $searchTerm . '%')
-                ->orWhere('license_plate_number', 'like', '%' . $searchTerm . '%');
-        })
-            ->where('id_upt', $userId) // Menambahkan kondisi id_upt
-            ->paginate(10);
+        //dd($driveconduc);
+        $assignedDrivers = $driveconduc->pluck('driver_id')->toArray();
+        $assignedBusConductors = $driveconduc->pluck('bus_conductor_id')->toArray();
+        //dd($assignedBusConductors);
 
-        return view('busses.index', compact('busses'));
+        $drivers = User::role('Driver')
+            ->where(function ($query) use ($bus) {
+                $query->whereHas('driverBus', function ($query) use ($bus) {
+                    $query->where('bus_id', $bus->id);
+                })->orWhereDoesntHave('driverBus');
+            })
+            ->where('id_upt', $userId)
+            ->get();
+
+        $bus_conductors = User::role('Bus_Conductor')
+            ->where(function ($query) use ($bus) {
+                $query->whereHas('ConductorBus', function ($query) use ($bus) {
+                    $query->where('bus_id', $bus->id);
+                })->orWhereDoesntHave('ConductorBus');
+            })
+            ->where('id_upt', $userId)
+            ->get();
+
+        return view('busses.detail', [
+            'bus' => $bus,
+            'drivers' => $drivers,
+            'bus_conductors' => $bus_conductors,
+            'assignedDrivers' => $assignedDrivers,
+            'assignedBusConductors' => $assignedBusConductors
+        ]);
     }
-
-
 
     public function edit($id)
     {
-        $userId = Auth::id();
+        $user = Auth::user();
+        $userId = $user->hasRole('Upt') ? $user->id : ($user->hasRole('Admin') ? $user->id_upt : null);
         $bus = Buss::findOrFail($id);
         $driveconduc = DriverConductorBus::where('bus_id', $bus->id)->get();
 
@@ -159,29 +235,35 @@ class BussesController extends Controller
     {
         $bus = Buss::findOrFail($id);
 
+        // Mencari bus dengan nomor plat kecuali bus yang sedang diupdate
+        $bus_license = Buss::where('license_plate_number', $request->input('license_plate_number'))
+            ->where('id', '!=', $id)
+            ->first();
+
         // Validasi data yang diterima dari formulir
         $request->validate([
             'name' => 'required',
-            'license_plate_number' => 'required',
+            'license_plate_number' => [
+                'required',
+                Rule::unique('busses')->ignore($bus->id),
+            ],
             'chair' => 'required',
             'class' => 'required',
-            'price' => 'required',
             'status' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-
+            'images' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $image = $request->file('image');
         if ($image) {
             $imageName = $image->store('avatars');
-            $bus->images = $imageName;
+        } else {
+            $imageName = 'avatars/default_bus.png';
         }
 
         $bus->name = $request->name;
         $bus->license_plate_number = $request->license_plate_number;
         $bus->chair = $request->chair;
         $bus->class = $request->class;
-        $bus->price = $request->price;
         $bus->status = $request->status;
         $bus->information = $request->status == 4 ? $request->keterangan : null;
 

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('bus_id');
             $table->foreignId('from_station_id');
             $table->foreignId('to_station_id');
+            $table->double('price');
             $table->time('time_start');
             $table->string('pwt');
             $table->timestamps();

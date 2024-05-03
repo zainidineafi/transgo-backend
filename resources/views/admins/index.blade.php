@@ -13,7 +13,7 @@
                                 <div>
                                     <form action="{{ route('admins.search') }}" method="GET">
                                         <div class="input-group">
-                                            <input type="text" class="form-control" name="search" id="searchInput" placeholder="Masukkan Nama Admin" value="" size="30">
+                                            <input type="text" class="form-control" name="search" id="searchInput" placeholder="Masukkan Nama / Alamat" value="" size="30">
                                             <div class="input-group-append">
                                                 <button class="btn btn-primary" type="submit">
                                                     <i class="fas fa-search"></i>

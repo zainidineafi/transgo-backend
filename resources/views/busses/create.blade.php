@@ -21,8 +21,11 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="license_plate_number">Nomor Polisi Kendaraaan</label>
-                                            <input type="text" class="form-control" name="license_plate_number" id="license_plate_number" placeholder="Masukkan Nomor Polisi Kendaraan" required value="{{ old('license_plate_number') }}">
+                                            <label for="license_plate_number">Nomor Polisi Kendaraan</label>
+                                            <input type="text" class="form-control @error('license_plate_number') is-invalid @enderror" name="license_plate_number" id="license_plate_number" placeholder="Masukkan Nomor Polisi Kendaraan" required value="{{ old('license_plate_number') }}" maxlength="11">
+                                            @error('license_plate_number')
+                                                <div class="invalid-feedback">Nomor Plat Kendaraan sudah terpakai</div>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
@@ -31,8 +34,9 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="chair">Kursi</label>
-                                            <input type="text" class="form-control" name="chair" id="chair" placeholder="Masukkan Kursi" required value="{{ old('chair') }}">
+                                            <input oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" type = "number" maxlength = "2" class="form-control" name="chair" id="chair" min="0" max="99" placeholder="Masukkan Kursi" required value="{{ old('chair') }}">
                                         </div>
+                                        
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -48,12 +52,6 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="price">Harga</label>
-                                            <input type="text" class="form-control" name="price" id="price" placeholder="Masukkan Harga" required value="{{ old('price') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
                                             <label for="status">Status</label>
                                             <select class="js-states form-control" name="status" id="status" style="width: 100%" onchange="showKeterangan()" required>
                                                 <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Belum Berangkat</option>
@@ -62,6 +60,17 @@
                                                 <option value="4" {{ old('status') == '4' ? 'selected' : '' }}>Terkendala</option>
                                                 <option value="5" {{ old('status') == '5' ? 'selected' : '' }}>Tiba di Tujuan</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="image">Avatar</label>
+                                            <div class="input-group">
+                                                <input class="form-control" type="file" name="image" id="image">
+                                                @if(old('image'))
+                                                    <span class="input-group-text">{{ old('image') }}</span>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -74,27 +83,13 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="image">Avatar</label>
-                                            <div class="input-group">
-                                                <input class="form-control" type="file" name="image" id="image">
-                                                @if(old('image'))
-                                                <span class="input-group-text">{{ old('image') }}</span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 
 
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="drivers">Sopir</label>
-                                            <select class="js-states form-control" name="drivers[]" id="drivers" style="width: 100%" multiple="multiple" title="Pilih satu atau lebih sopir">
+                                            <select class="js-states form-control" name="drivers[]" id="drivers" style="width: 100%"  title="Pilih satu atau lebih sopir">
                                                 @if($drivers->isEmpty())
                                                 <option disabled selected>Belum Ada Sopir</option>
                                                 @endif
@@ -112,7 +107,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="bus_conductors">Kondektur</label>
-                                            <select class="js-states form-control" name="bus_conductors[]" id="bus_conductors" style="width: 100%" multiple="multiple" title="Pilih satu atau lebih kondektur">
+                                            <select class="js-states form-control" name="bus_conductors[]" id="bus_conductors" style="width: 100%"  title="Pilih satu atau lebih kondektur">
                                                 @if($bus_conductors->isEmpty())
                                                 <option disabled selected>Belum Ada Kondektur</option>
                                                 @endif
@@ -167,7 +162,7 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                <a href="{{ route('bus_stations.index') }}" class="btn btn-primary">Ya, Kembali</a>
+                                                <a href="{{ route('busses.index') }}" class="btn btn-primary">Ya, Kembali</a>
                                             </div>
                                         </div>
                                     </div>

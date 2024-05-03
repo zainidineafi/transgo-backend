@@ -8,7 +8,7 @@
                 <div class="col-xl">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Edit Upt</h5>
+                            <h5 class="card-title">Ubah Upt</h5>
                             <p>Ubah data sesuai kebutuhan</p>
                             <form method="POST" action="{{ route('upts.update', $upt->id) }}" enctype="multipart/form-data">
                                 @csrf
@@ -86,7 +86,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="phone_number">Nomor Handphone</label>
-                                            <input type="text" class="form-control @error('phone_number') is-invalid @enderror" name="phone_number" id="phone_number" placeholder="Nomor Handphone" value="{{ old('phone_number', $upt->phone_number) }}" required maxlength="12">
+                                            <input type="text" class="form-control @error('phone_number') is-invalid @enderror" name="phone_number" id="phone_number" placeholder="Nomor Handphone" value="{{ old('phone_number', $upt->phone_number) }}" required minlength="10" maxlength="13">
                                             @error('phone_number')
                                             <div class="invalid-feedback">Nomor Handphone sudah terpakai</div>
                                         @enderror

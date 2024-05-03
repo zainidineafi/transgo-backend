@@ -12,14 +12,25 @@ use Illuminate\Support\Facades\Auth;
 
 class BusConductorController extends Controller
 {
-    // Menampilkan daftar pengguna
     public function index()
     {
-        // Mendapatkan ID pengguna yang sedang masuk
-        $userId = Auth::id();
-        $bus_conductors = User::role('Bus_Conductor')->where('id_upt', $userId)->paginate(10);
-        return view('bus_conductors.index', compact('bus_conductors'));
+        // Pastikan pengguna telah diautentikasi
+        if (Auth::check()) {
+            // Ambil peran pengguna yang masuk
+            $user = Auth::user();
+            // Periksa apakah pengguna memiliki peran Upt atau Admin
+            if ($user->hasRole('Upt') || $user->hasRole('Admin')) {
+                // Tentukan ID Upt yang akan digunakan dalam kueri
+
+                $uptId = $user->hasRole('Upt') ? $user->id : ($user->hasRole('Admin') ? $user->id_upt : null);
+
+                $bus_conductors = User::role('Bus_Conductor')->where('id_upt', $uptId)->paginate(10);
+                return view('bus_conductors.index', compact('bus_conductors'));
+            }
+        }
     }
+
+
 
 
     public function search(Request $request)

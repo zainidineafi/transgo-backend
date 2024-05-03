@@ -13,7 +13,7 @@
                                 <div>
                                     <form action="{{ route('bus_conductors.search') }}" method="GET">
                                         <div class="input-group">
-                                            <input type="text" class="form-control" name="search" id="searchInput" placeholder="Masukkan Nama Kondektur" value="" size="30">
+                                            <input type="text" class="form-control" name="search" id="searchInput" placeholder="Masukkan Nama / Alamat" value="" size="30">
                                             <div class="input-group-append">
                                                 <button class="btn btn-primary" type="submit">
                                                     <i class="fas fa-search"></i>
@@ -25,13 +25,15 @@
                                 <div class="d-flex">
                                     <a href="{{ route('bus_conductors.index') }}" id="refreshPage" class="btn btn-outline-info mr-2" data-toggle="tooltip" data-placement="top" title="Segarkan">
                                         <i class="fas fa-sync-alt mr-1"></i>
-                                    </a>                                    
+                                    </a>
+                                    @if (Auth::user()->hasRole('Upt'))
                                     <a href="{{ route('bus_conductors.create') }}" class="btn btn-outline-success mr-2" data-toggle="tooltip" data-placement="top" title="Tambah">
                                         <i class="fas fa-plus"></i>
                                     </a>
                                     <a href="#" id="deleteAllSelectedRecord" class="btn btn-outline-danger" data-toggle="modal" data-target="#confirmationModal" data-url="{{ route('bus_conductors.destroy.multi') }}" >
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -98,11 +100,13 @@
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                             </div>
+                                            @if (Auth::user()->hasRole('Upt'))
                                             <div class="btn-group" role="group" aria-label="Basic example">
                                                 <a href="{{ route('bus_conductors.edit', $bus_conductor->id) }}" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Ubah">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                             </div>
+                                            @endif
                                         </td>
                                     </tr>
                                     @endforeach

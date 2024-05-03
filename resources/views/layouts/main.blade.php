@@ -24,6 +24,7 @@
         <!-- Theme Styles -->
         <link href="../../assets/css/lime.min.css" rel="stylesheet">
         <link href="../../assets/css/custom.css" rel="stylesheet">
+        <script src="../../assets/js/valid_busstat.js"></script>
 
 
     </head>
@@ -94,9 +95,9 @@
         <script src="../../assets/js/pages/select2.js"></script>
         <script src="../../assets/js/custom.js"></script>
         <script src="../../assets/js/search.js"></script>
+        <script src="../../assets/js/valid_busstat.js"></script>
         <script src="../../assets/js/disabled.js"></script>
         <script src="../../assets/js/multi_del.js"></script>
-        
         <script src="../../assets/js/status.js"></script>
         <script src="../../assets/js/select.js"></script>
             @if(session('message'))
@@ -104,8 +105,5 @@
         toastr.success("{{ Session::get('message') }}");
         </script>
         @endif
-        
-        
-        
     </body>
 </html>

@@ -53,6 +53,7 @@ class AdminController extends Controller
     public function store(Request $request)
     {
         $image = $request->file('image');
+
         if ($image) {
             $imageName = $image->store('avatars');
         } else {

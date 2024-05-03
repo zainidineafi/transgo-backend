@@ -19,7 +19,7 @@ class Buss extends Model
         'price',
         'status',
         'information',
-        'image',
+        'images',
         'id_upt',
     ];
 

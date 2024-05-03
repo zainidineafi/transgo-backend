@@ -9,7 +9,15 @@
                         <div class="card-body">
                             <div class="dashboard-info row">
                                 <div class="info-text col-md-6">
-                                    <h5 class="card-title">Welcome back Anna!</h5>
+                                    @if(Auth::check())
+                                    <h5 class="card-title">Welcome back, {{ $user->name }}!</h5>
+                                    <p>Your roles:
+                                        @foreach($user->getRoleNames() as $role)
+                                            {{ $role }}
+                                        @endforeach
+                                    </p>
+                                @endif
+
                                     <p>Get familiar with dashboard, here are some ways to get started.</p>
                                     <ul>
                                         <li>Check some stats for your website bellow</li>

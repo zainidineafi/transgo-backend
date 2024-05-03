@@ -25,13 +25,15 @@
                                 <div class="d-flex">
                                     <a href="{{ route('busses.index') }}" id="refreshPage" class="btn btn-outline-info mr-2" data-toggle="tooltip" data-placement="top" title="Segarkan">
                                         <i class="fas fa-sync-alt mr-1"></i>
-                                    </a>                                    
+                                    </a>
+                                    @if (Auth::user()->hasRole('Upt'))
                                     <a href="{{ route('busses.create') }}" class="btn btn-outline-success mr-2" data-toggle="tooltip" data-placement="top" title="Tambah">
                                         <i class="fas fa-plus"></i>
                                     </a>
                                     <a href="#" id="deleteAllSelectedRecord" class="btn btn-outline-danger" data-toggle="modal" data-target="#confirmationModal" data-url="{{ route('busses.destroy.multi') }}" >
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -59,14 +61,15 @@
                                     <tr class="text-center">
                                         <th>
                                             <input type="checkbox" name = "" id="select_all_ids">
-                                        </th>                                        
+                                        </th>
                                         <th>ID</th>
                                         <th>Nama</th>
-                                        <th>Nomor Plat</th>
                                         <th>Jumlah Kursi</th>
+                                        <th>Nomor Plat</th>
                                         <th>Kelas</th>
-                                        <th>Harga</th>
                                         <th>Status</th>
+                                        <th>Sopir</th>
+                                        <th>Kondektur</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -80,11 +83,10 @@
                                     <tr class="text-center" id = "upt_ids{{ $bus ->id }}">
                                         <td><input type="checkbox" name="ids" class = "checkbox_ids" id ="{{ $bus->id }}" value="{{ $bus->id }}"></td>
                                         <td>{{ $bus->id }}</td>
-                                        <td>{{ $bus->name }}</td>
-                                        <td>{{ $bus->license_plate_number }}</td>
+                                        <td>{{ $bus->name }}</td> 
                                         <td>{{ $bus->chair }}</td>
+                                        <td>{{ $bus->license_plate_number }}</td>
                                         <td>{{ $bus->class }}</td>
-                                        <td>{{ $bus->price }}</td>
                                         <td>
                                             @if ($bus->status == 1)
                                                 Belum Berangkat
@@ -98,6 +100,9 @@
                                                 Tiba di Tujuan
                                             @endif
                                         </td>
+                                        <td>{{ $bus->driver_name ?: '-'}}</td>
+                                        <td>{{ $bus->conductor_name ?: '-'}}</td>
+
                                         
                                         <td>
                                             <div class="btn-group" role="group" aria-label="Basic example">

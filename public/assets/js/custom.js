@@ -74,8 +74,3 @@ document
             event.preventDefault();
         }
     });
-
-function deleteImage() {
-    // Reset nilai input file
-    document.getElementById("image").value = "";
-}
