@@ -24,7 +24,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="license_plate_number">Nomor Polisi Kendaraaan</label>
-                                        <input type="text" class="form-control @error('license_plate_number') is-invalid @enderror"  name="license_plate_number" id="license_plate_number" placeholder="Masukkan Nomor Polisi Kendaraan" required value="{{ old('license_plate_number', $bus->license_plate_number) }}">
+                                        <input type="text" class="form-control @error('license_plate_number') is-invalid @enderror"  name="license_plate_number" id="license_plate_number" placeholder="Masukkan Nomor Polisi Kendaraan" required value="{{ old('license_plate_number', $bus->license_plate_number) }}" oninput="this.value = this.value.replace(/\s/g, '');">
                                         @error('license_plate_number')
                                                 <div class="invalid-feedback">Nomor Plat Kendaraan sudah terpakai</div>
                                             @enderror

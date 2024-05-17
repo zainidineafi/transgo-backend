@@ -22,7 +22,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="license_plate_number">Nomor Polisi Kendaraan</label>
-                                            <input type="text" class="form-control @error('license_plate_number') is-invalid @enderror" name="license_plate_number" id="license_plate_number" placeholder="Masukkan Nomor Polisi Kendaraan" required value="{{ old('license_plate_number') }}" maxlength="11">
+                                            <input type="text" class="form-control" name="license_plate_number" id="license_plate_number" placeholder="Masukkan Nomor Polisi Kendaraan" required maxlength="11" oninput="this.value = this.value.replace(/\s/g, '');">
                                             @error('license_plate_number')
                                                 <div class="invalid-feedback">Nomor Plat Kendaraan sudah terpakai</div>
                                             @enderror

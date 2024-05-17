@@ -22,7 +22,7 @@
                                                 <option disabled selected>Belum Ada Bus</option>
                                                 @endif
                                                 @foreach($busses as $buss)
-                                                <option value="{{ $buss->id }}">{{ $buss->name }}</option>
+                                                    <option value="{{ $buss->id }}">{{ $buss->name }} ({{ $buss->license_plate_number }})</option>
                                                 @endforeach
                                             </select>
                                         </div>

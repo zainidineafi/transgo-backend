@@ -85,7 +85,7 @@
                                         <td>{{ $bus->id }}</td>
                                         <td>{{ $bus->name }}</td> 
                                         <td>{{ $bus->chair }}</td>
-                                        <td>{{ $bus->license_plate_number }}</td>
+                                        <td>{{ preg_replace('/([a-zA-Z])([0-9]+)/', '$1 $2 ', $bus->license_plate_number) }}</td>
                                         <td>{{ $bus->class }}</td>
                                         <td>
                                             @if ($bus->status == 1)

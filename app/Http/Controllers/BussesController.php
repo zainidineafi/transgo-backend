@@ -96,22 +96,21 @@ class BussesController extends Controller
 
     public function store(Request $request)
     {
-        $bus_license = Buss::where('license_plate_number', $request->input('license_plate_number'))->first();
-
-        //dd($bus_license);
-        // Validasi data yang diterima dari formulir
         $request->validate([
             'name' => 'required',
             'license_plate_number' => [
                 'required',
-                Rule::unique('busses')->ignore($bus_license ? $bus_license->id : null),
+                Rule::unique('busses')
             ],
             'chair' => 'required',
             'class' => 'required',
-            'status' => 'required', // Menambahkan validasi untuk status
+            'status' => 'required',
             'drivers' => 'nullable|array',
             'bus_conductors' => 'nullable|array',
         ]);
+
+        // Menghapus spasi dari nomor plat kendaraan
+        $licensePlateNumber = str_replace(' ', '', $request->license_plate_number);
 
         $image = $request->file('image');
 
@@ -125,7 +124,7 @@ class BussesController extends Controller
 
         $bus = Buss::create([
             'name' => $request->name,
-            'license_plate_number' => $request->license_plate_number,
+            'license_plate_number' => $licensePlateNumber,
             'chair' => $request->chair,
             'class' => $request->class,
             'status' => $request->status, // Menambahkan status dari formulir
@@ -254,6 +253,7 @@ class BussesController extends Controller
         ]);
 
         $image = $request->file('image');
+
         if ($image) {
             $imageName = $image->store('avatars');
         } else {
@@ -266,6 +266,7 @@ class BussesController extends Controller
         $bus->class = $request->class;
         $bus->status = $request->status;
         $bus->information = $request->status == 4 ? $request->keterangan : null;
+        $bus->images = $imageName;
 
         $bus->save();
 

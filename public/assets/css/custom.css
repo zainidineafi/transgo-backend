@@ -64,3 +64,9 @@
   
   
   
+.avatar {
+    width: 40px; /* Sesuaikan dengan ukuran yang Anda inginkan */
+    height: 40px; /* Sesuaikan dengan ukuran yang Anda inginkan */
+    border-radius: 50%; /* Membuat gambar menjadi lingkaran */
+    object-fit: cover; /* Memastikan gambar tidak terdistorsi */
+}

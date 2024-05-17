@@ -12,6 +12,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UptController;
 use App\Http\Controllers\BusStationController;
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScheduleController;
 use App\Models\BusStation;
 
@@ -19,6 +20,11 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('role:Upt|Admin')->name('dashboard');
+
+Route::get('/profile', [ProfileController::class, 'show'])->middleware('role:Root|Upt|Admin')->name('profile');
+Route::post('/profile/update-image', [ProfileController::class, 'updateImage'])->middleware('role:Root|Upt|Admin')->name('profile.update-image');
+Route::put('/profile/update/{id}', [ProfileController::class, 'update'])->middleware('role:Root|Upt|Admin')->name('profile.update');
+
 
 Route::middleware(['role:Root|Upt|Admin'])->group(function () {
     Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules.index');

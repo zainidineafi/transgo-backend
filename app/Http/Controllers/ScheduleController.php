@@ -28,7 +28,6 @@ class ScheduleController extends Controller
         // Ambil data stasiun bus dari model BusStation
         $busStations = BusStation::all();
 
-        // Kirim data ke tampilan create, konversi $busStations menjadi JSON string
         return view('schedules.create', compact('busses', 'busStations'));
     }
 

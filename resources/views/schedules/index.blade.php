@@ -84,7 +84,7 @@
                                     <tr class="text-center" id="upt_ids{{ $schedule->id }}">
                                         <td><input type="checkbox" name="ids" class="checkbox_ids" id="{{ $schedule->id }}" value="{{ $schedule->id }}"></td>
                                         <td>{{ $schedule->id }}</td>
-                                        <td>{{ $schedule->bus->name }}</td>
+                                        <td>{{ $schedule->bus->name }} ({{ $schedule->bus->license_plate_number }})</td>
                                         <td>{{ $schedule->fromStation->name }}</td>
                                         <td>{{ $schedule->toStation->name }}</td>
                                         <td>{{ $schedule->price }}</td>
