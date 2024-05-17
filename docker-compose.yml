@@ -5,7 +5,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        image: transgo-backend
+        image: transgo-backend/php
         container_name: app
         restart: unless-stopped
         tty: true
@@ -43,9 +43,8 @@ services:
         ports:
             - "3306:3306"
         environment:
-            MYSQL_DATABASE: ${DB_DATABASE}
-            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE: db
+            MYSQL_ROOT_PASSWORD:
             SERVICE_TAGS: dev
             SERVICE_NAME: mysql
         volumes:
