@@ -52,6 +52,9 @@ Route::get('/busses', [ApiBussesController::class, 'DataBusses']);
 
 
 //pemesanan tiket
-Route::put('/reserveTicket', [ApiReservationController::class, 'reserveTicket']);
-Route::put('/reservations', [ApiReservationController::class, 'getReservations']);
-
+Route::post('/reservations', [ApiReservationController::class, 'store']);
+Route::put('/reservations/check/{reservationId}', [ApiReservationController::class, 'checkTicket']);
+Route::get('/reservations/current/{user_id}', [ApiReservationController::class, 'currentReservations']);
+Route::get('/reservations/past/{user_id}', [ApiReservationController::class, 'pastReservations']);
+Route::get('/reservations/current', [ApiReservationController::class, 'getAllCurrentReservations']);
+Route::get('/reservations/by-passenger-name', [ApiReservationController::class, 'getReservationsByPassengerName']);
