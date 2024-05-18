@@ -64,8 +64,4 @@ class User extends Authenticatable
         return $this->hasMany(DriverConductorBus::class, 'bus_conductor_id');
     }
 
-    public function bookings()
-    {
-        return $this->hasMany(TicketBooking::class);
-    }
 }

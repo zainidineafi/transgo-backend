@@ -58,3 +58,5 @@ Route::get('/reservations/current/{user_id}', [ApiReservationController::class, 
 Route::get('/reservations/past/{user_id}', [ApiReservationController::class, 'pastReservations']);
 Route::get('/reservations/current', [ApiReservationController::class, 'getAllCurrentReservations']);
 Route::get('/reservations/by-passenger-name', [ApiReservationController::class, 'getReservationsByPassengerName']);
+
+

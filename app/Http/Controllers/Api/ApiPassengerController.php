@@ -5,23 +5,16 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Carbon\Carbon;
-use App\Models;
+use App\Models\ApiToken;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
+use Str;
 
 class ApiPassengerController extends Controller
 {
-
-    public function passengers()
-    {
-        $passengers = User::role('Passenger')->get();
-        return response()->json(['passengers' => $passengers]);
-    }
-
+    // Mendaftarkan Passenger baru
     public function registerPassengers(Request $request)
     {
         // Validasi data yang diterima dari permintaan
@@ -32,7 +25,7 @@ class ApiPassengerController extends Controller
             'address' => 'required|string|max:255',
             'gender' => 'required|string|in:male,female',
             'phone_number' => 'required|string|max:20',
-            // Tambahkan validasi lain sesuai kebutuhan
+
         ]);
 
         // Jika validasi gagal, kembalikan respons dengan pesan kesalahan
@@ -40,6 +33,7 @@ class ApiPassengerController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+        // Default image
         $images = 'default.jpg';
 
         // Buat pengguna baru
@@ -50,10 +44,10 @@ class ApiPassengerController extends Controller
             'address' => $request->address,
             'gender' => $request->gender,
             'phone_number' => $request->phone_number,
-            'images' => $images, // Gunakan nilai default untuk 'images'
+            'images' => $images,
         ]);
 
-        // Beri peran kepada pengguna baru
+        // Beri peran 'Passenger' kepada pengguna baru
         $role = Role::where('name', 'Passenger')->first();
         if ($role) {
             $user->assignRole($role);
@@ -63,25 +57,46 @@ class ApiPassengerController extends Controller
         return response()->json(['message' => 'User registered successfully'], 201);
     }
 
+    // Login Passenger dan buat token pendek
     public function loginPassengers(Request $request)
     {
         // Validasi data yang diterima dari permintaan
         $credentials = $request->only('email', 'password');
 
-        // Coba melakukan proses login menggunakan Passport
+        // Coba melakukan proses login
         if (Auth::attempt($credentials)) {
             // Jika proses login berhasil, dapatkan pengguna yang diautentikasi
             $user = Auth::user();
-            // Buat akses token untuk pengguna
-            $accessToken = $user->createToken('authToken')->accessToken;
-            // Kembalikan respons dengan akses token
-            return response()->json(['access_token' => $accessToken], 200);
+
+            // Hapus token lama
+            ApiToken::where('user_id', $user->id)->delete();
+
+            // Buat token pendek
+            $token = Str::random(20);
+
+            // Simpan token di database
+            ApiToken::create([
+                'user_id' => $user->id,
+                'token' => $token,
+            ]);
+
+            // Kembalikan respons dengan token pendek dan data pengguna
+            return response()->json(['access_token' => $token, 'user' => $user], 200);
         } else {
             // Jika proses login gagal, kembalikan respons dengan pesan kesalahan
             return response()->json(['error' => 'Unauthorized'], 401);
         }
     }
 
+    // Mengambil data Passenger yang sedang login
+    public function passengers(Request $request)
+    {
+        // Mengambil semua data pengguna dengan peran 'Passenger'
+        $passengers = User::role('Passenger')->get();
+        return response()->json(['passengers' => $passengers], 200);
+    }
+
+    // Memperbarui password Passenger
     public function updatePassengers(Request $request)
     {
         // Validasi data yang diterima dari form
@@ -106,10 +121,11 @@ class ApiPassengerController extends Controller
         return response()->json(['message' => 'Password updated successfully'], 200);
     }
 
+    // Mendapatkan jadwal bus
     public function schedules()
     {
         $busSchedules = Schedule::all();
-            // Mengembalikan data dalam format JSON
+        // Mengembalikan data dalam format JSON
         return response()->json(['schedules' => $busSchedules], 200);
     }
 
