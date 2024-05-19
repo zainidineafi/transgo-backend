@@ -33,18 +33,45 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/upts', [ApiController::class, 'upts']);
 Route::get('/users', [ApiController::class, 'users']);
 
-//Passenger
-Route::post('/registerPassengers', [ApiPassengerController::class, 'registerPassengers']);
-Route::get('/passengers', [ApiPassengerController::class, 'passengers']);
-Route::post('/loginPassengers', [ApiPassengerController::class, 'loginPassengers']);
-Route::put('/updatePassengers', [ApiPassengerController::class, 'updatePassengers']);
-Route::get('/schedules', [ApiPassengerController::class, 'schedules']);
 
-//BusConductors
-Route::get('/BusConductors', [ApiBusConductorController::class, 'BusConductors']);
-Route::post('/loginBusConductor', [ApiBusConductorController::class, 'loginBusConductor']);
-Route::post('/registerBusConductor', [ApiBusConductorController::class, 'registerBusConductor']);
-Route::post('/registerDriver', [ApiBusConductorController::class, 'registerDriver']);
+// Passenger routes
+Route::prefix('passenger')->group(function () {
+    Route::post('/register', [ApiPassengerController::class, 'registerPassengers']);
+    Route::post('/login', [ApiPassengerController::class, 'loginPassengers']);
+    Route::get('/', [ApiPassengerController::class, 'passengers']);
+    Route::put('/update-password', [ApiPassengerController::class, 'updatePassengers']);
+    Route::put('/update-address', [ApiPassengerController::class, 'updateAddress']);
+    Route::put('/update-phone-number', [ApiPassengerController::class, 'updatePhoneNumber']);
+    Route::put('/update-image', [ApiPassengerController::class, 'updateImage']);
+    Route::get('/schedules', [ApiPassengerController::class, 'schedules']);
+    Route::get('/search/name/{name}', [ApiPassengerController::class, 'getPassengerByName']);
+    Route::get('/search/id/{id}', [ApiPassengerController::class, 'getPassengerById']);
+    Route::get('/schedules/search-by-destination', [ApiPassengerController::class, 'searchSchedulesByDestination']);
+    Route::get('/schedules/search-by-time', [ApiPassengerController::class, 'searchSchedulesByTimeStart']);
+    Route::get('/schedules/search-by-station', [ApiPassengerController::class, 'searchSchedulesByFromStationId']);
+});
+
+
+// Bus Conductor routes
+Route::prefix('bus-conductor')->group(function () {
+    Route::post('/register', [ApiBusConductorController::class, 'registerBusConductor']);
+    Route::post('/login', [ApiBusConductorController::class, 'loginBusConductor']);
+    Route::get('/', [ApiBusConductorController::class, 'BusConductors']);
+    Route::put('/update-password', [ApiBusConductorController::class, 'updatePassword']);
+    Route::put('/update-address', [ApiBusConductorController::class, 'updateAddress']);
+    Route::put('/update-phone-number', [ApiBusConductorController::class, 'updatePhoneNumber']);
+    Route::put('/update-image', [ApiBusConductorController::class, 'updateImage']);
+});
+
+// Driver routes
+Route::prefix('driver')->group(function () {
+    Route::post('/register', [ApiBusConductorController::class, 'registerDriver']);
+    Route::post('/login', [ApiBusConductorController::class, 'loginDriver']);
+    Route::put('/update-password', [ApiBusConductorController::class, 'updatePassword']);
+    Route::put('/update-address', [ApiBusConductorController::class, 'updateAddress']);
+    Route::put('/update-phone-number', [ApiBusConductorController::class, 'updatePhoneNumber']);
+    Route::put('/update-image', [ApiBusConductorController::class, 'updateImage']);
+});
 
 //status dan data bus
 Route::put('/busses/{id}/status', [ApiBussesController::class, 'updateStatus']);
@@ -52,6 +79,12 @@ Route::get('/busses', [ApiBussesController::class, 'DataBusses']);
 
 
 //pemesanan tiket
-Route::put('/reserveTicket', [ApiReservationController::class, 'reserveTicket']);
-Route::put('/reservations', [ApiReservationController::class, 'getReservations']);
+Route::prefix('reservations')->group(function () {
+Route::post('/', [ApiReservationController::class, 'store']);
+Route::put('/check/{reservationId}', [ApiReservationController::class, 'checkTicket']);
+Route::get('/current/{user_id}', [ApiReservationController::class, 'currentReservations']);
+Route::get('/past/{user_id}', [ApiReservationController::class, 'pastReservations']);
+Route::get('/current', [ApiReservationController::class, 'getAllCurrentReservations']);
+Route::get('/by-passenger-name', [ApiReservationController::class, 'getReservationsByPassengerName']);
+});
 

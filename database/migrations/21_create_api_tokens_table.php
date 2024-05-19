@@ -4,25 +4,22 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTicketBookingsTable extends Migration
+return new class extends Migration
 {
     public function up()
     {
-        Schema::create('ticket_bookings', function (Blueprint $table) {
+        Schema::create('api_tokens', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('bus_id');
             $table->unsignedBigInteger('user_id');
-            $table->integer('seat_count');
-            $table->boolean('checked')->default(false);
+            $table->string('token', 20)->unique();
             $table->timestamps();
 
-            $table->foreign('bus_id')->references('id')->on('busses')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('ticket_bookings');
+        Schema::dropIfExists('api_tokens');
     }
-}
+};

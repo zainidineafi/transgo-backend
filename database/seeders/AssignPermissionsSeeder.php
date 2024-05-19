@@ -20,10 +20,6 @@ class AssignPermissionsSeeder extends Seeder
         $user = User::find(1);
 
 
-        $passengersRole = Role::create(['name' => 'Passengers']);
-
-        $user->assignRole($passengersRole);
-
         // Temukan peran 'Root' jika sudah ada
         $adminRole = Role::where('name', 'Root')->first();
 
