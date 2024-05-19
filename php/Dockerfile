@@ -1,50 +1,54 @@
+# Gunakan image PHP 8.1 dengan FPM (FastCGI Process Manager)
 FROM php:8.1-fpm
 
-# Copy composer.lock and composer.json
-COPY composer.lock composer.json /var/www/
-
-# Set working directory
-WORKDIR /var/www
-
-# Install dependencies
+# Update package list dan install dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential \
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
-    locales \
+    libzip-dev \
     zip \
-    jpegoptim optipng pngquant gifsicle \
-    vim \
     unzip \
     git \
     curl \
-    libzip-dev
+    libxml2-dev \
+    libxslt1-dev \
+    libicu-dev \
+    libonig-dev \
+    g++
 
-# Clear cache
+# Membersihkan cache apt
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install extensions
+# Install ekstensi PHP
 RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl
-RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install gd
 
-# Install composer
+# Instal Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Add user for laravel application
+# Menambahkan user untuk aplikasi Laravel (ganti User8 dengan www)
 RUN groupadd -g 1000 www
-RUN useradd -u 1000 -ms /bin/bash -g www www
+RUN useradd -u 1000 -ms /bin/bash -g www User8
 
-# Copy existing application directory contents
+# Mengatur direktori kerja
+WORKDIR /var/www
+
+# Menyalin isi direktori aplikasi
 COPY . /var/www
 
-# Copy existing application directory permissions
-COPY --chown=www:www . /var/www
+# Menetapkan izin untuk direktori Laravel
+RUN mkdir -p /var/www/storage /var/www/bootstrap/cache
+RUN chown -R User8:www /var/www
 
-# Change current user to www
-USER www
+# Mengubah pengguna saat ini ke User8
+USER User8
 
-# Expose port 9000 and start php-fpm server
+# Menyalin file composer.lock dan composer.json, dan menginstal dependensi PHP
+COPY --chown=User8:www composer.lock composer.json /var/www/
+RUN composer install
+
+# Mengekspos port 9000 dan menjalankan server php-fpm
 EXPOSE 9000
 CMD ["php-fpm"]
