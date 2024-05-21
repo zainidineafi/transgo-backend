@@ -34,22 +34,25 @@ Route::get('/upts', [ApiController::class, 'upts']);
 Route::get('/users', [ApiController::class, 'users']);
 
 
-// Passenger routes
+// Group route untuk API dengan prefix 'passenger'
 Route::prefix('passenger')->group(function () {
     Route::post('/register', [ApiPassengerController::class, 'registerPassengers']);
     Route::post('/login', [ApiPassengerController::class, 'loginPassengers']);
-    Route::get('/', [ApiPassengerController::class, 'passengers']);
-    Route::put('/update-password', [ApiPassengerController::class, 'updatePassengers']);
-    Route::put('/update-address', [ApiPassengerController::class, 'updateAddress']);
-    Route::put('/update-phone-number', [ApiPassengerController::class, 'updatePhoneNumber']);
-    Route::put('/update-image', [ApiPassengerController::class, 'updateImage']);
-    Route::get('/schedules', [ApiPassengerController::class, 'schedules']);
-    Route::get('/search/name/{name}', [ApiPassengerController::class, 'getPassengerByName']);
-    Route::get('/search/id/{id}', [ApiPassengerController::class, 'getPassengerById']);
-    Route::get('/schedules/search-by-destination', [ApiPassengerController::class, 'searchSchedulesByDestination']);
-    Route::get('/schedules/search-by-time', [ApiPassengerController::class, 'searchSchedulesByTimeStart']);
-    Route::get('/schedules/search-by-station', [ApiPassengerController::class, 'searchSchedulesByFromStationId']);
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/', [ApiPassengerController::class, 'passengers']);
+        Route::put('/update-password', [ApiPassengerController::class, 'updatePassengers']);
+        Route::get('/schedules', [ApiPassengerController::class, 'schedules']);
+        Route::put('/update-address', [ApiPassengerController::class, 'updateAddress']);
+        Route::put('/update-phone', [ApiPassengerController::class, 'updatePhoneNumber']);
+        Route::post('/update-image', [ApiPassengerController::class, 'updateImage']);
+        Route::get('/by-name/{name}', [ApiPassengerController::class, 'getPassengerByName']);
+        Route::get('/by-id/{id}', [ApiPassengerController::class, 'getPassengerById']);
+        Route::post('/schedules/by-destination', [ApiPassengerController::class, 'searchSchedulesByDestination']);
+        Route::post('/schedules/by-time', [ApiPassengerController::class, 'searchSchedulesByTimeStart']);
+        Route::post('/schedules/by-from-station', [ApiPassengerController::class, 'searchSchedulesByFromStationId']);
+    });
 });
+
 
 
 // Bus Conductor routes
@@ -74,8 +77,9 @@ Route::prefix('driver')->group(function () {
 });
 
 //status dan data bus
-Route::put('/busses/{id}/status', [ApiBussesController::class, 'updateStatus']);
+Route::put('/busses/status/{id}', [ApiBussesController::class, 'updateStatus']);
 Route::get('/busses', [ApiBussesController::class, 'DataBusses']);
+Route::get('/BusStation', [ApiBussesController::class, 'BusStation']);
 
 
 //pemesanan tiket

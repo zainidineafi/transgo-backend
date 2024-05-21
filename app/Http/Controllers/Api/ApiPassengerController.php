@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Laravel\Passport\Passport;
 use App\Models\ApiToken;
-use App\Models\Schedule; // Pastikan model Schedule sudah dibuat dan diimport
+use App\Models\Schedule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Validator;
-use Str;
+use Illuminate\Support\Str;
 
 class ApiPassengerController extends Controller
 {
@@ -53,39 +54,79 @@ class ApiPassengerController extends Controller
             $user->assignRole($role);
         }
 
-        // Return response with success message
-        return response()->json(['message' => 'User registered successfully'], 201);
+        // Buat token pendek
+        $token = Str::random(40); // Panjang token yang lebih aman
+
+        // Simpan token di database
+        ApiToken::create([
+            'user_id' => $user->id,
+            'token' => $token,
+        ]);
+
+        // Kembalikan respons dengan token pendek dan data pengguna
+        return response()->json([
+            'access_token' => $token,
+            'user' => [
+                'name' => $user->name,
+                'email' => $user->email,
+                'address' => $user->address,
+                'gender' => $user->gender,
+                'phone' => $user->phone_number,
+                'updated_at' => $user->updated_at->toISOString(),
+                'created_at' => $user->created_at->toISOString(),
+                'id' => $user->id
+            ]
+        ], 201);
     }
 
-    // Login Passenger dan buat token pendek
+    // Login Passenger menggunakan token tetap
     public function loginPassengers(Request $request)
     {
         // Validasi data yang diterima dari permintaan
-        $credentials = $request->only('email', 'password');
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email',
+            'password' => 'required|string|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         // Coba melakukan proses login
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             // Jika proses login berhasil, dapatkan pengguna yang diautentikasi
             $user = Auth::user();
 
-            // Hapus token lama
-            ApiToken::where('user_id', $user->id)->delete();
+            // Ambil token yang ada atau buat token baru
+            $token = $user->apiTokens()->firstOrCreate(
+                ['user_id' => $user->id],
+                ['token' => Str::random(40)]
+            );
 
-            // Buat token pendek
-            $token = Str::random(20);
-
-            // Simpan token di database
-            ApiToken::create([
-                'user_id' => $user->id,
-                'token' => $token,
-            ]);
-
-            // Kembalikan respons dengan token pendek dan data pengguna
-            return response()->json(['access_token' => $token, 'user' => $user], 200);
+            // Kembalikan respons dengan token tetap dan data pengguna
+            return response()->json([
+                'access_token' => $token->token,
+                'user' => [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'address' => $user->address,
+                    'gender' => $user->gender,
+                    'phone' => $user->phone_number,
+                    'updated_at' => $user->updated_at->toISOString(),
+                    'created_at' => $user->created_at->toISOString(),
+                    'id' => $user->id
+                ]
+            ], 200);
         } else {
             // Jika proses login gagal, kembalikan respons dengan pesan kesalahan
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+    }
+
+    // Middleware untuk memastikan token di setiap permintaan
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['registerPassengers', 'loginPassengers']]);
     }
 
     // Mengambil data Passenger yang sedang login
@@ -96,64 +137,30 @@ class ApiPassengerController extends Controller
         return response()->json(['passengers' => $passengers], 200);
     }
 
-    // Memperbarui password Passenger
-    public function updatePassengers(Request $request)
-    {
-        // Validasi data yang diterima dari form
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+// Memperbarui password Passenger
 
-        // Temukan pengguna berdasarkan alamat email
-        $user = User::where('email', $request->email)->first();
-
-        // Jika pengguna tidak ditemukan
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        // Update password pengguna
-        $user->password = Hash::make($request->password);
-        $user->save();
-
-        // Return response with success message
-        return response()->json(['message' => 'Password updated successfully'], 200);
-    }
-
-    // Mendapatkan jadwal bus
-    public function schedules()
-    {
-        // Mengambil semua data jadwal bus
-        $busSchedules = Schedule::all();
-        // Mengembalikan data dalam format JSON
-        return response()->json(['schedules' => $busSchedules], 200);
-    }
-
-    // Memperbarui alamat Passenger
-    public function updateAddress(Request $request)
+public function updatePassengers(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'address' => 'required|string|max:255',
+            'current_password' => 'required|string|min:8',
+            'new_password' => 'required|string|min:8|confirmed',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = Auth::user();
 
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json(['error' => 'Current password is incorrect'], 401);
         }
 
-        $user->address = $request->address;
+        $user->password = Hash::make($request->new_password);
         $user->save();
 
-        return response()->json(['message' => 'Address updated successfully'], 200);
+        return response()->json(['message' => 'Password changed successfully'], 200);
     }
-
     // Memperbarui nomor telepon Passenger
     public function updatePhoneNumber(Request $request)
     {

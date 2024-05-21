@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('api_tokens', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('token', 20)->unique();
+            $table->string('token', 60)->unique();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

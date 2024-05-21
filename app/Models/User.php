@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Passport\HasApiTokens;
 
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
@@ -18,7 +19,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'address', 'gender', 'phone_number', 'images', 'id_upt'
+        'name', 'email', 'password', 'address', 'gender', 'phone_number', 'images', 'id_upt', 'api_token'
     ];
 
     /**
@@ -63,6 +64,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(DriverConductorBus::class, 'bus_conductor_id');
     }
-
+    public function apiTokens()
+    {
+        return $this->hasMany(ApiToken::class);
+    }
 
 }
