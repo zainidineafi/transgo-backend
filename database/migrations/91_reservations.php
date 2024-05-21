@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->foreignId('bus_id');
             $table->foreignId('schedule_id');
-            $table->enum('status', [1, 2, 3, 4]);
+            $table->enum('status', [1, 2]);
             $table->date('date_departure');
             $table->string('name');
             $table->enum('gender', ['pria', 'wanita']);
