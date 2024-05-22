@@ -13,6 +13,7 @@ use App\Http\Controllers\UptController;
 use App\Http\Controllers\BusStationController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ScheduleController;
 use App\Models\BusStation;
 
@@ -48,6 +49,7 @@ Route::middleware(['role:Upt|Admin'])->group(function () {
     Route::get('/busses/{id}/edit', [BussesController::class, 'edit'])->name('busses.edit');
     Route::get('/busses/{id}/detail', [BussesController::class, 'detail'])->name('busses.detail');
     Route::put('/busses/{id}', [BussesController::class, 'update'])->name('busses.update');
+    Route::get('/busses/filter', [BussesController::class, 'filter'])->name('busses.filter');
 });
 
 Route::middleware(['role:Root'])->group(function () {
@@ -102,6 +104,8 @@ Route::middleware(['role:Upt'])->group(function () {
     Route::post('/busses', [BussesController::class, 'store'])->name('busses.store');
     Route::post('/busses/delete', [BussesController::class, 'destroyMulti'])->name('busses.destroy.multi');
 
+
+
     // route for bus_stations
     Route::get('/bus_stations', [BusStationController::class, 'index'])->name('bus_stations.index');
     Route::get('/bus_stations/search', [BusStationController::class, 'search'])->name('bus_stations.search');
@@ -111,6 +115,9 @@ Route::middleware(['role:Upt'])->group(function () {
     Route::get('/bus_stations/{id}/edit', [BusStationController::class, 'edit'])->name('bus_stations.edit');
     Route::put('/bus_stations/{id}', [BusStationController::class, 'update'])->name('bus_stations.update');
     Route::post('/bus_stations/delete', [BusStationController::class, 'destroyMulti'])->name('bus_stations.destroy.multi');
+
+    // route for reservations
+    Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
 });
 
 

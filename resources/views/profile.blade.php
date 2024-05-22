@@ -130,7 +130,7 @@
                                         <div class="form-group">
                                             <label for="level">Hak Akses</label>
                                             <select class="js-states form-control" name="level" id="level" style="width: 100%" disabled>
-                                                @foreach ($roles as $role)
+                                                @foreach ($userRoles as $role)
                                                 <option value="{{ $role->id }}" @if($role->name === 'Admin') selected @endif>{{ $role->name }}</option>
                                                 @endforeach
                                             </select>

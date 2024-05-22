@@ -17,21 +17,15 @@ class AssignPermissionsSeeder extends Seeder
     public function run()
     {
         // Temukan pengguna dengan ID 1
-        $user = User::find(1);
-
+        $root = User::find(1);
 
         // Temukan peran 'Root' jika sudah ada
-        $adminRole = Role::where('name', 'Root')->first();
+        $rootRole = Role::where('name', 'Root')->first();
 
-        // Pastikan peran 'Root' ditemukan sebelum menetapkannya
-        if ($adminRole) {
+        // rootROle peran 'Root' ditemukan sebelum menetapkannya
+        if ($rootRole) {
             // Menetapkan peran 'Root' kepada pengguna dengan ID 1
-            $user->assignRole($adminRole);
-
-            // Menetapkan izin CRUD Upt kepada peran 'Root'
-            $adminRole->givePermissionTo([
-                'view dashboard'
-            ]);
+            $root->assignRole($rootRole);
         } else {
             // Handle jika peran 'Root' tidak ditemukan
             // Misalnya, Anda dapat mencetak pesan kesalahan atau melakukan tindakan lainnya.

@@ -33,7 +33,11 @@
                                         <a href="#" id="deleteAllSelectedRecord" class="btn btn-outline-danger" data-toggle="modal" data-target="#confirmationModal" data-url="{{ route('schedules.destroy.multi') }}">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>
+
                                         @endif
+                                        <button id="exportToExcel" class="btn btn-outline-primary" data-toggle="tooltip" data-placement="top" title="Cetak">
+                                            <i class="fas fa-file-excel"></i> Cetak
+                                        </button>
                                 </div>
                                 
                             </div>
@@ -113,27 +117,7 @@
                             
                         </div>
 
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination justify-content-center">
-                                @if ($schedules->previousPageUrl())
-                                    <li class="page-item"><a class="page-link" href="{{ $schedules->previousPageUrl() }}">Kembali</a></li>
-                                @else
-                                    <li class="page-item disabled"><span class="page-link">Kembali</span></li>
-                                @endif
                         
-                                @for ($i = 1; $i <= $schedules->lastPage(); $i++)
-                                    <li class="page-item {{ $schedules->currentPage() == $i ? 'active' : '' }}">
-                                        <a class="page-link" href="{{ $schedules->url($i) }}">{{ $i }}</a>
-                                    </li>
-                                @endfor
-                        
-                                @if ($schedules->nextPageUrl())
-                                    <li class="page-item"><a class="page-link" href="{{ $schedules->nextPageUrl() }}">Berikutnya</a></li>
-                                @else
-                                    <li class="page-item disabled"><span class="page-link">Berikutnya</span></li>
-                                @endif
-                            </ul>
-                        </nav>
                     </div>
                 </div>
             </div>

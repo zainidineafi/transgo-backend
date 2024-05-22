@@ -118,6 +118,7 @@
         <script src="../../assets/js/lime.min.js"></script>
         <script src="../../assets/js/pages/select2.js"></script>
 
+       
         
 
         <script src="../../assets/js/custom.js"></script>
@@ -129,37 +130,118 @@
         <script src="../../assets/js/upload.js"></script>
         <script src="../../assets/js/select.js"></script>
        <!-- Pastikan $userRegistrations telah disertakan sebelum script -->
+      
        @if(Route::currentRouteName() == 'dashboard')
+       
        <script src="../../assets/js/dashboard.js"></script>
-        <script>
-            var ctx = document.getElementById('userRegistrationsChart').getContext('2d');
-            var userRegistrationsData = @json($userRegistrations);
-
-            var dates = userRegistrationsData.map(data => data.date);
-            var registrations = userRegistrationsData.map(data => data.registrations);
-
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: dates,
-                    datasets: [{
-                        label: 'User Registrations',
-                        data: registrations,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
+       <script>
+        function filterBusses() {
+            let status = document.getElementById('status').value;
+            console.log('Selected status: ' + status);
+            
+            $.ajax({
+                url: `{{ route('dashboard') }}`,
+                type: 'GET',
+                data: { status: status },
+                success: function(data) {
+                    $('#busTableBody').html(data);
                 },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
+                error: function(xhr, status, error) {
+                    console.error('Error fetching data: ' + error);
+                }
+            });
+        }
+    </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Data dari controller
+                var dates = @json($dates);
+                var reservationsCount = @json($reservationsCount);
+    
+                // Inisialisasi Chart.js
+                var ctx = document.getElementById('reservationsChart').getContext('2d');
+                var reservationsChart = new Chart(ctx, {
+                    type: 'line', // Menggunakan grafik garis
+                    data: {
+                        labels: dates, // Label pada sumbu-x (tanggal)
+                        datasets: [{
+                            label: 'Jumlah Pemesanan',
+                            data: reservationsCount, // Data jumlah pemesanan
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Tanggal'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Jumlah Pemesanan'
+                                },
+                                beginAtZero: true
+                            }
+                        },
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
                         }
                     }
-                }
+                });
             });
         </script>
         @endif
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.4/xlsx.full.min.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Fungsi untuk mengekspor data tabel ke Excel
+                document.getElementById('exportToExcel').addEventListener('click', function() {
+                    // Ambil judul kolom dari tabel
+                    var columns = [];
+                    document.querySelectorAll('table th').forEach(function(th) {
+                        columns.push(th.innerText);
+                    });
+        
+                    // Ambil semua baris dari tabel
+                    var rows = document.querySelectorAll('table tr');
+                    
+                    // Buat array kosong untuk menyimpan data
+                    var data = [columns]; // Tambahkan judul kolom sebagai baris pertama
+                    
+                    // Iterasi melalui setiap baris tabel
+                    rows.forEach(function(row) {
+                        var rowData = [];
+                        
+                        // Ambil setiap sel dalam baris
+                        row.querySelectorAll('td').forEach(function(cell) {
+                            // Tambahkan teks sel ke dalam rowData
+                            rowData.push(cell.innerText);
+                        });
+                        
+                        // Tambahkan rowData ke dalam data array
+                        data.push(rowData);
+                    });
+                    // Buat workbook baru
+                    var wb = XLSX.utils.book_new();
+                    // Buat worksheet baru dengan data dari tabel
+                    var ws = XLSX.utils.aoa_to_sheet(data);
+                    // Tambahkan worksheet ke dalam workbook
+                    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+                    // Simpan workbook sebagai file Excel
+                    XLSX.writeFile(wb, 'jadwal.xlsx');
+                });
+            });
+        </script>
+        
 
 
             @if(session('message'))

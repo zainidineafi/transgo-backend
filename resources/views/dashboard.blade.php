@@ -10,21 +10,15 @@
                             <div class="dashboard-info row">
                                 <div class="info-text col-md-6">
                                     @if(Auth::check())
-                                    <h5 class="card-title">Welcome back, {{ $user->name }}!</h5>
-                                    <p>Your roles:
-                                        @foreach($user->getRoleNames() as $role)
-                                            {{ $role }}
-                                        @endforeach
+                                    <h5 class="card-title">Selamat Datang, kembali {{ $user->name }}!</h5>
+                                    <p>
+                                        Anda telah masuk ke dalam halaman dashboard. 
+                                    </p>
+                                    <br>
+                                    <p>
+                                        Jangan ragu untuk menjelajahi berbagai fitur yang tersedia dan lakukan tindakan yang diperlukan untuk mengelola aplikasi Anda dengan baik.
                                     </p>
                                 @endif
-
-                                    <p>Get familiar with dashboard, here are some ways to get started.</p>
-                                    <ul>
-                                        <li>Check some stats for your website bellow</li>
-                                        <li>Sync content to other devices</li>
-                                        <li>You now have access to File Manager app.</li>
-                                    </ul>
-                                    <a href="#" class="btn btn-warning m-t-xs">Learn More</a>
                                 </div>
                                 <div class="info-image col-md-6"></div>
                             </div>
@@ -35,69 +29,111 @@
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Grafik Pengguna Daftar</h5>
-                            <canvas id="userRegistrationsChart" width="400" height="200"></canvas>
+                            <h5 class="card-title">Grafik Pemesanan Bus</h5>
+                            <canvas id="reservationsChart" width="400" height="200"></canvas>
                         </div>
                     </div>
                 </div>
 
             </div>
+            @if (Auth::user()->hasRole('Upt'))
             <div class="row">
                 <div class="col-md-4">
-                    <div class="card stat-card">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Admin</h5>
-                            @php
-                                // Mengambil jumlah total admin
-                                $totalAdmin = \App\Models\User::role('Admin')->count();
-                                // Menghitung persentase total admin dari seluruh pengguna
-                                $percentAdmin = $totalAdmin > 0 ? ($totalAdmin / \App\Models\User::count()) * 100 : 0;
-                            @endphp
-                            <h2 class="float-right">{{ $totalAdmin }}</h2>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $percentAdmin }}%" aria-valuenow="{{ $percentAdmin }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    <a href="{{ route('admins.index') }}">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title"><i class="fas fa-user-shield fa-lg mr-2"></i>Total Admin</h5>
+                                </div>
+                                <h2 class="float-right">{{ $totalAdmins }}</h2>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $totalAdmins }}%" aria-valuenow="{{ $totalAdmins }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
                             </div>
                         </div>
-                        
-                    </div>
+                    </a>
                 </div>
                 <div class="col-md-4">
-                    <div class="card stat-card">
-                        <div class="card-body">
-                            <h5 class="card-title">Orders</h5>
-                            <h2 class="float-right">14.3K</h2>
-                            <p>Orders in waitlist</p>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                    <a href="{{ route('bus_stations.index') }}">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title"> <i class="fas fa-bus-alt fa-lg mr-2"></i>Total Terminal</h5>
+                                </div>
+                                <h2 class="float-right">{{ $totalBusStations }}</h2>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $totalBusStations }}%" aria-valuenow="{{ $totalBusStations }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-md-4">
-                    <div class="card stat-card">
-                        <div class="card-body">
-                            <h5 class="card-title">Monthly Profit</h5>
-                            <h2 class="float-right">45.6$</h2>
-                            <p>For last 30 days</p>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 45%" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                    <a href="{{ route('busses.index') }}">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title"> <i class="fas fa-bus fa-lg mr-2"></i>Total Bus</h5>
+                                </div>
+                                <h2 class="float-right">{{ $totalBusses }}</h2>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $totalBusses }}%" aria-valuenow="{{ $totalBusses }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
+            @endif
+            
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-12">
                     <div class="card">
                         <div class="card-body">
-                            <canvas id="userRegistrationsChart" width="400" height="200"></canvas>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="form-group mr-3 mb-0">
+                                        <label for="status">Status</label>
+                                        <select class="js-states form-control" name="status" id="status" style="width: 200px;" onchange="filterBusses()" required>
+                                            <option value="" {{ request('status') == '' ? 'selected' : '' }}>Semua</option>
+                                            <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Belum Berangkat</option>
+                                            <option value="2" {{ request('status') == '2' ? 'selected' : '' }}>Bersedia Berangkat</option>
+                                            <option value="3" {{ request('status') == '3' ? 'selected' : '' }}>Berangkat</option>
+                                            <option value="4" {{ request('status') == '4' ? 'selected' : '' }}>Terkendala</option>
+                                            <option value="5" {{ request('status') == '5' ? 'selected' : '' }}>Tiba di Tujuan</option>
+                                        </select>
+                                    </div>
+                                    <h4 class="mb-0 align-middle">
+                                        <span class="badge badge-info">Data Bus</span>
+                                    </h4>
+                                </div>
+                            </div>
+                            <div id="uptTable" class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th>ID</th>
+                                            <th>Nama</th>
+                                            <th>Status</th>
+                                            <th>Jumlah Kursi</th>
+                                            <th>Nomor Plat</th>
+                                            <th>Kelas</th>
+                                            <th>Informasi</th>
+                                            <th>Sopir</th>
+                                            <th>Kondektur</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="busTableBody">
+                                        @include('partials.bus_table_body', ['busses' => $busses])
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             </div>
         </div>
-
         @endsection
  

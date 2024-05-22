@@ -18,11 +18,11 @@ class CreateUsersSeeder extends Seeder
      */
     public function run()
     {
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 1; $i++) {
             DB::table('users')->insert([
-                'name' => 'User ' . $i,
-                'email' => 'user' . $i . '@gmail.com',
-                'password' => Hash::make('password123'),
+                'name' => 'root ' . $i,
+                'email' => 'root' . $i . '@gmail.com',
+                'password' => Hash::make('passwordroot'),
                 'address' => 'Address ' . $i,
                 'gender' => $i % 2 == 0 ? 'male' : 'female',
                 'phone_number' => '123456789' . $i,

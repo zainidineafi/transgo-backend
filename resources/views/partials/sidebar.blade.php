@@ -24,12 +24,17 @@
             @if(Auth::check() && Auth::user()->hasRole('Upt'))
                     <li>
                         <a href="{{ route('admins.index') }}" class="{{ request()->is('admins*') ? 'active' : '' }}">
-                            <i class="material-icons">person_outline</i>Management Admin
+                            <i class="material-icons">group</i>Management Admin
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('bus_stations.index') }}" class="{{ request()->is('bus_stations*') ? 'active' : '' }}">
-                            <i class="material-icons">person_outline</i>Management Terminal
+                            <i class="material-icons">departure_board</i>Management Terminal
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('reservations.index') }}" class="{{ request()->is('reservations*') ? 'active' : '' }}">
+                            <i class="material-icons">history</i>Riwayat Pemesanan
                         </a>
                     </li>
                 @endif
@@ -48,13 +53,13 @@
                 </li>
                 <li>
                     <a href="{{ route('busses.index') }}" class="{{ request()->is('busses*') ? 'active' : '' }}">
-                        <i class="material-icons">person_outline</i>Management Bus
+                        <i class="material-icons">directions_bus</i>Management Bus
                     </a>
                 </li>
             @endif
             <li>
                 <a href="{{ route('schedules.index') }}" class="{{ request()->is('schedules*') ? 'active' : '' }}">
-                    <i class="material-icons">person_outline</i>Jadwal
+                    <i class="material-icons">schedule</i>Jadwal
                 </a>
             </li>
         </ul>

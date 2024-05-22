@@ -22,10 +22,11 @@ class ProfileController extends Controller
             'male' => 'Laki-Laki',
             'female' => 'Perempuan'
         ];
-        $roles = Role::all();
+        // Mengambil peran yang terkait dengan pengguna
+        $userRoles = $userProfile->roles;
 
         // Kirim data profil pengguna ke view
-        return view('profile', compact('userProfile', 'genders', 'roles'));
+        return view('profile', compact('userProfile', 'genders', 'userRoles'));
     }
 
     public function updateImage(Request $request)

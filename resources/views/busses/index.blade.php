@@ -89,15 +89,15 @@
                                         <td>{{ $bus->class }}</td>
                                         <td>
                                             @if ($bus->status == 1)
-                                                Belum Berangkat
+                                                <span class="badge badge-primary">Belum Berangkat</span>
                                             @elseif ($bus->status == 2)
-                                                Bersedia Berangkat
+                                                <span class="badge badge-warning">Bersedia Berangkat</span>
                                             @elseif ($bus->status == 3)
-                                                Berangkat
+                                                <span class="badge badge-success">Berangkat</span>
                                             @elseif ($bus->status == 4)
-                                                Terkendala
+                                                <span class="badge badge-danger">Terkendala</span>
                                             @elseif ($bus->status == 5)
-                                                Tiba di Tujuan
+                                                <span class="badge badge-info">Tiba di Tujuan</span>
                                             @endif
                                         </td>
                                         <td>{{ $bus->driver_name ?: '-'}}</td>

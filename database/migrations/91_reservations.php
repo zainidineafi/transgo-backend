@@ -21,7 +21,7 @@ return new class extends Migration
             $table->enum('status', [1, 2]);
             $table->date('date_departure');
             $table->string('name');
-            $table->enum('gender', ['pria', 'wanita']);
+            $table->enum('gender', ['male', 'female']);
             $table->string('phone_number');
             $table->timestamps();
 
