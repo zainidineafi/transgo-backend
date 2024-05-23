@@ -34,23 +34,27 @@ Route::get('/upts', [ApiController::class, 'upts']);
 Route::get('/users', [ApiController::class, 'users']);
 
 
-// Group route untuk API dengan prefix 'passenger'
-Route::prefix('passenger')->group(function () {
-    Route::post('/register', [ApiPassengerController::class, 'registerPassengers']);
-    Route::post('/login', [ApiPassengerController::class, 'loginPassengers']);
-    Route::middleware('auth:api')->group(function () {
-        Route::get('/', [ApiPassengerController::class, 'passengers']);
-        Route::put('/update-password', [ApiPassengerController::class, 'updatePassengers']);
-        Route::get('/schedules', [ApiPassengerController::class, 'schedules']);
-        Route::put('/update-address', [ApiPassengerController::class, 'updateAddress']);
-        Route::put('/update-phone', [ApiPassengerController::class, 'updatePhoneNumber']);
-        Route::post('/update-image', [ApiPassengerController::class, 'updateImage']);
-        Route::get('/by-name/{name}', [ApiPassengerController::class, 'getPassengerByName']);
-        Route::get('/by-id/{id}', [ApiPassengerController::class, 'getPassengerById']);
-        Route::post('/schedules/by-destination', [ApiPassengerController::class, 'searchSchedulesByDestination']);
-        Route::post('/schedules/by-time', [ApiPassengerController::class, 'searchSchedulesByTimeStart']);
-        Route::post('/schedules/by-from-station', [ApiPassengerController::class, 'searchSchedulesByFromStationId']);
-    });
+Route::post('passenger/register', [ApiPassengerController::class, 'register']);
+Route::post('passenger/login', [ApiPassengerController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/passenger/update-password', [ApiPassengerController::class, 'updatePassword']);
+    Route::post('passenger/update-address', [ApiPassengerController::class, 'updateAddress']);
+    Route::post('passenger/update-phone', [ApiPassengerController::class, 'updatePhone']);
+    Route::post('passenger/update-image', [ApiPassengerController::class, 'updateImage']);
+    Route::get('passenger/passenger-by-name', [ApiPassengerController::class, 'getPassengerByName']);
+    Route::get('passenger/passenger/{id}', [ApiPassengerController::class, 'getPassengerById']);
+    Route::get('passenger/schedules', [ApiPassengerController::class, 'schedules']);
+    Route::get('passenger/search-schedules-by-destination', [ApiPassengerController::class, 'searchSchedulesByDestination']);
+    Route::get('passenger/searchSchedulesByFromStationAddress', [ApiPassengerController::class, 'searchSchedulesByFromStationAddress']);
+    Route::get('passenger/searchSchedulesByFromStationName', [ApiPassengerController::class, 'searchSchedulesByFromStationName']);
+    Route::post('passenger/logout', [ApiPassengerController::class, 'logout']);
+
+    Route::post('/reserve', [ApiReservationController::class, 'reserveTicket']);
+    Route::get('/tickets', [ApiReservationController::class, 'getTickets']);
+    Route::get('/ticket/{id}', [ApiReservationController::class, 'getTicketDetails']);
+    Route::get('/ticket-history', [ApiReservationController::class, 'getTicketHistory']);
+    Route::post('/accept-ticket/{id}', [ApiReservationController::class, 'acceptTicket']);
 });
 
 
