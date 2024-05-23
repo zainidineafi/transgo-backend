@@ -18,11 +18,8 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->foreignId('bus_id');
             $table->foreignId('schedule_id');
+            $table->integer('tickets_booked');
             $table->enum('status', [1, 2]);
-            $table->date('date_departure');
-            $table->string('name');
-            $table->enum('gender', ['male', 'female']);
-            $table->string('phone_number');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');

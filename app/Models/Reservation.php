@@ -13,11 +13,8 @@ class Reservation extends Model
         'user_id',
         'bus_id',
         'schedule_id',
+        'tickets_booked',
         'status',
-        'date_departure',
-        'name',
-        'gender',
-        'phone_number',
     ];
 
     // Relasi dengan model User

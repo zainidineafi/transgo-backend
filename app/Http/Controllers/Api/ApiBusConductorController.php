@@ -10,10 +10,15 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Validator;
-use Str;
+use Illuminate\Support\Str;
 
 class ApiBusConductorController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['registerBusConductor', 'loginBusConductor', 'registerDriver', 'loginDriver']]);
+    }
+
     public function BusConductors()
     {
         $BusConductors = User::role('Bus_Conductor')->get();
@@ -22,7 +27,6 @@ class ApiBusConductorController extends Controller
 
     public function registerBusConductor(Request $request)
     {
-        // Validasi data yang diterima dari permintaan
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -36,9 +40,8 @@ class ApiBusConductorController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $images = 'default.jpg'; // Gunakan nilai default untuk 'images'
+        $images = 'default.jpg';
 
-        // Buat pengguna baru
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -49,7 +52,6 @@ class ApiBusConductorController extends Controller
             'images' => $images,
         ]);
 
-        // Beri peran kepada pengguna baru
         $role = Role::where('name', 'Bus_Conductor')->first();
         if ($role) {
             $user->assignRole($role);
@@ -60,13 +62,12 @@ class ApiBusConductorController extends Controller
 
     public function loginBusConductor(Request $request)
     {
-        // Validasi data yang diterima dari permintaan
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             ApiToken::where('user_id', $user->id)->delete();
-            $token = Str::random(20);
+            $token = Str::random(40);
             ApiToken::create([
                 'user_id' => $user->id,
                 'token' => $token,
@@ -80,7 +81,6 @@ class ApiBusConductorController extends Controller
 
     public function registerDriver(Request $request)
     {
-        // Validasi data yang diterima dari permintaan
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -94,7 +94,7 @@ class ApiBusConductorController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $images = 'default.jpg'; // Gunakan nilai default untuk 'images'
+        $images = 'default.jpg';
 
         $user = User::create([
             'name' => $request->name,
@@ -116,13 +116,12 @@ class ApiBusConductorController extends Controller
 
     public function loginDriver(Request $request)
     {
-        // Validasi data yang diterima dari permintaan
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             ApiToken::where('user_id', $user->id)->delete();
-            $token = Str::random(20);
+            $token = Str::random(40);
             ApiToken::create([
                 'user_id' => $user->id,
                 'token' => $token,
@@ -134,11 +133,9 @@ class ApiBusConductorController extends Controller
         }
     }
 
-    // Metode untuk memperbarui password
     public function updatePassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
             'old_password' => 'required|string',
             'new_password' => 'required|string|min:8|confirmed',
         ]);
@@ -147,9 +144,9 @@ class ApiBusConductorController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = Auth::user();
 
-        if (!$user || !Hash::check($request->old_password, $user->password)) {
+        if (!Hash::check($request->old_password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
@@ -159,11 +156,9 @@ class ApiBusConductorController extends Controller
         return response()->json(['message' => 'Password updated successfully'], 200);
     }
 
-    // Metode untuk memperbarui alamat
     public function updateAddress(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
             'address' => 'required|string|max:255',
         ]);
 
@@ -171,23 +166,16 @@ class ApiBusConductorController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
+        $user = Auth::user();
         $user->address = $request->address;
         $user->save();
 
         return response()->json(['message' => 'Address updated successfully'], 200);
     }
 
-    // Metode untuk memperbarui nomor telepon
     public function updatePhoneNumber(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
             'phone_number' => 'required|string|max:20',
         ]);
 
@@ -195,23 +183,16 @@ class ApiBusConductorController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
+        $user = Auth::user();
         $user->phone_number = $request->phone_number;
         $user->save();
 
         return response()->json(['message' => 'Phone number updated successfully'], 200);
     }
 
-    // Metode untuk memperbarui gambar
     public function updateImage(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
             'images' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -219,11 +200,7 @@ class ApiBusConductorController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
+        $user = Auth::user();
 
         if ($request->hasFile('images')) {
             $image = $request->file('images');
@@ -236,5 +213,49 @@ class ApiBusConductorController extends Controller
         $user->save();
 
         return response()->json(['message' => 'Image updated successfully'], 200);
+    }
+
+    public function getBusConductorByName(Request $request, $name)
+    {
+        $user = User::where('name', 'LIKE', "%$name%")->role('Bus_Conductor')->get();
+
+        if ($user->isEmpty()) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return response()->json(['BusConductor' => $user], 200);
+    }
+
+    public function getBusConductorById($id)
+    {
+        $user = User::role('Bus_Conductor')->find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return response()->json(['BusConductor' => $user], 200);
+    }
+
+    public function getDriverByName(Request $request, $name)
+    {
+        $user = User::where('name', 'LIKE', "%$name%")->role('Driver')->get();
+
+        if ($user->isEmpty()) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return response()->json(['Driver' => $user], 200);
+    }
+
+    public function getDriverById($id)
+    {
+        $user = User::role('Driver')->find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return response()->json(['Driver' => $user], 200);
     }
 }

@@ -41,9 +41,8 @@ return [
             'provider' => 'users',
         ],
         'api' => [
-            'driver' => 'passport',
-            'provider' => 'users',
-            'hash' => false,
+            'driver' => 'sanctum',
+            'provider' => 'users','bus_stations',
         ],
     ],
 

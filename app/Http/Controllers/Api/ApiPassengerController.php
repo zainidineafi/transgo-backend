@@ -3,41 +3,31 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
-use Laravel\Passport\Passport;
-use App\Models\ApiToken;
-use App\Models\Schedule;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
+use App\Models\Schedule;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class ApiPassengerController extends Controller
 {
-    // Mendaftarkan Passenger baru
-    public function registerPassengers(Request $request)
+    public function register(Request $request)
     {
-        // Validasi data yang diterima dari permintaan
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'address' => 'required|string|max:255',
-            'gender' => 'required|string|in:male,female',
-            'phone_number' => 'required|string|max:20',
+            'name' => 'required|string',
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|min:6',
+            'address' => 'required|string',
+            'gender' => 'required|in:male,female',
+            'phone_number' => 'required|string',
+            'images' => 'required|string',
         ]);
 
-        // Jika validasi gagal, kembalikan respons dengan pesan kesalahan
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['error' => $validator->errors()], 400);
         }
 
-        // Default image
-        $images = 'default.jpg';
-
-        // Buat pengguna baru
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -45,138 +35,98 @@ class ApiPassengerController extends Controller
             'address' => $request->address,
             'gender' => $request->gender,
             'phone_number' => $request->phone_number,
-            'images' => $images,
+            'images' => $request->images,
         ]);
 
-        // Beri peran 'Passenger' kepada pengguna baru
-        $role = Role::where('name', 'Passenger')->first();
-        if ($role) {
-            $user->assignRole($role);
-        }
+        $token = $user->createToken('ApiPassenger')->plainTextToken;
 
-        // Buat token pendek
-        $token = Str::random(40); // Panjang token yang lebih aman
-
-        // Simpan token di database
-        ApiToken::create([
-            'user_id' => $user->id,
-            'token' => $token,
-        ]);
-
-        // Kembalikan respons dengan token pendek dan data pengguna
-        return response()->json([
-            'access_token' => $token,
-            'user' => [
-                'name' => $user->name,
-                'email' => $user->email,
-                'address' => $user->address,
-                'gender' => $user->gender,
-                'phone' => $user->phone_number,
-                'updated_at' => $user->updated_at->toISOString(),
-                'created_at' => $user->created_at->toISOString(),
-                'id' => $user->id
-            ]
-        ], 201);
+        return response()->json(['user' => $user, 'token' => $token], 201);
     }
 
-    // Login Passenger menggunakan token tetap
-    public function loginPassengers(Request $request)
+    public function login(Request $request)
     {
-        // Validasi data yang diterima dari permintaan
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'password' => 'required|string|min:8',
-        ]);
+        $credentials = $request->only('email', 'password');
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        // Coba melakukan proses login
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            // Jika proses login berhasil, dapatkan pengguna yang diautentikasi
+        if (Auth::attempt($credentials)) {
             $user = Auth::user();
-
-            // Ambil token yang ada atau buat token baru
-            $token = $user->apiTokens()->firstOrCreate(
-                ['user_id' => $user->id],
-                ['token' => Str::random(40)]
-            );
-
-            // Kembalikan respons dengan token tetap dan data pengguna
-            return response()->json([
-                'access_token' => $token->token,
-                'user' => [
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'address' => $user->address,
-                    'gender' => $user->gender,
-                    'phone' => $user->phone_number,
-                    'updated_at' => $user->updated_at->toISOString(),
-                    'created_at' => $user->created_at->toISOString(),
-                    'id' => $user->id
-                ]
-            ], 200);
-        } else {
-            // Jika proses login gagal, kembalikan respons dengan pesan kesalahan
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-    }
-
-    // Middleware untuk memastikan token di setiap permintaan
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['registerPassengers', 'loginPassengers']]);
-    }
-
-    // Mengambil data Passenger yang sedang login
-    public function passengers(Request $request)
-    {
-        // Mengambil semua data pengguna dengan peran 'Passenger'
-        $passengers = User::role('Passenger')->get();
-        return response()->json(['passengers' => $passengers], 200);
-    }
-
-// Memperbarui password Passenger
-
-public function updatePassengers(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'current_password' => 'required|string|min:8',
-            'new_password' => 'required|string|min:8|confirmed',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            $token = $user->createToken('ApiPassenger')->plainTextToken;
+            return response()->json(['user' => $user, 'token' => $token], 200);
         }
 
-        $user = Auth::user();
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
 
-        if (!Hash::check($request->current_password, $user->password)) {
-            return response()->json(['error' => 'Current password is incorrect'], 401);
-        }
+    public function updatePassword(Request $request)
+{
 
-        $user->password = Hash::make($request->new_password);
+    // Validasi data yang diterima
+    $validatedData = $request->validate([
+        'password' => 'required|min:6',
+    ]);
+
+    // Dapatkan pengguna yang sedang masuk
+    $user = auth("api")->user();
+
+    if ($user) {
+        // Setel password baru
+        $user->password = Hash::make($validatedData['password']);
         $user->save();
 
-        return response()->json(['message' => 'Password changed successfully'], 200);
+        return response()->json(['message' => 'Password updated successfully'], 200);
+    } else {
+        return response()->json(['message' => 'User not found'], 404);
     }
-    // Memperbarui nomor telepon Passenger
-    public function updatePhoneNumber(Request $request)
+}
+public function searchSchedulesByFromStationAddress(Request $request)
+{
+    // Validasi input
+    $validator = Validator::make($request->all(), [
+        'from_station_address' => 'required|string',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()], 400);
+    }
+
+    // Cari jadwal berdasarkan alamat stasiun asal
+    $fromStationAddress = $request->input('from_station_address');
+    $schedules = Schedule::whereHas('fromStation', function ($query) use ($fromStationAddress) {
+        $query->where('address', 'like', '%' . $fromStationAddress . '%');
+    })->get();
+
+    return response()->json(['schedules' => $schedules], 200);
+}
+
+
+
+    public function updateAddress(Request $request)
     {
+        $user = auth("api")::user();
+
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'phone_number' => 'required|string|max:20',
+            'address' => 'required|string',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['error' => $validator->errors()], 400);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user->address = $request->address;
+        $user->save();
 
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+        return response()->json(['message' => 'Address updated successfully'], 200);
+    }
+
+    public function updatePhone(Request $request)
+    {
+        $user = auth("api")::user();
+
+        $validator = Validator::make($request->all(), [
+            'phone_number' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
         }
 
         $user->phone_number = $request->phone_number;
@@ -185,111 +135,96 @@ public function updatePassengers(Request $request)
         return response()->json(['message' => 'Phone number updated successfully'], 200);
     }
 
-    // Memperbarui gambar Passenger
     public function updateImage(Request $request)
     {
+        $user = auth("api")::user();
+
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'images' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'images' => 'required|string',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['error' => $validator->errors()], 400);
         }
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        if ($request->hasFile('images')) {
-            $image = $request->file('images');
-            $name = time() . '.' . $image->getClientOriginalExtension();
-            $destinationPath = public_path('/images');
-            $image->move($destinationPath, $name);
-            $user->images = $name;
-        }
-
+        $user->images = $request->images;
         $user->save();
 
-        return response()->json(['message' => 'Image updated successfully'], 200);
+        return response()->json(['message' => 'Profile image updated successfully'], 200);
     }
 
-    // Mendapatkan data Passenger berdasarkan nama
-    public function getPassengerByName(Request $request, $name)
+    public function getPassengerByName(Request $request)
     {
-        // Temukan pengguna berdasarkan nama
-        $user = User::where('name', 'LIKE', "%$name%")->role('Passenger')->get();
+        $name = $request->input('name');
 
-        // Jika pengguna tidak ditemukan
-        if ($user->isEmpty()) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
+        $passengers = User::where('name', 'like', '%' . $name . '%')->get();
 
-        // Kembalikan data pengguna dalam format JSON
-        return response()->json(['passenger' => $user], 200);
+        return response()->json(['passengers' => $passengers], 200);
     }
 
-    // Mendapatkan data Passenger berdasarkan ID
     public function getPassengerById($id)
     {
-        // Temukan pengguna berdasarkan ID
-        $user = User::role('Passenger')->find($id);
+        $passenger = User::find($id);
 
-        // Jika pengguna tidak ditemukan
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+        if (!$passenger) {
+            return response()->json(['error' => 'Passenger not found'], 404);
         }
 
-        // Kembalikan data pengguna dalam format JSON
-        return response()->json(['passenger' => $user], 200);
+        return response()->json(['passenger' => $passenger], 200);
+    }
+    public function schedules()
+    {
+        // Ambil semua jadwal
+        $schedules = Schedule::all();
+
+        return response()->json(['schedules' => $schedules], 200);
     }
 
     public function searchSchedulesByDestination(Request $request)
     {
+        // Validasi input
         $validator = Validator::make($request->all(), [
-            'destination' => 'required|string|max:255',
+            'destination' => 'required|string',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['error' => $validator->errors()], 400);
         }
 
-        $schedules = Schedule::where('destination', $request->destination)->get();
+        // Cari jadwal berdasarkan tujuan
+        $destination = $request->input('destination');
+        $schedules = Schedule::where('destination', $destination)->get();
 
         return response()->json(['schedules' => $schedules], 200);
     }
 
-    // Pencarian jadwal bus berdasarkan waktu mulai
-    public function searchSchedulesByTimeStart(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'time_start' => 'required|date_format:H:i',
-        ]);
+    public function searchSchedulesByFromStationName(Request $request)
+{
+    // Validasi input
+    $validator = Validator::make($request->all(), [
+        'from_station_name' => 'required|string',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $schedules = Schedule::where('time_start', $request->time_start)->get();
-
-        return response()->json(['schedules' => $schedules], 200);
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()], 400);
     }
 
-    // Pencarian jadwal bus berdasarkan ID stasiun asal
-    public function searchSchedulesByFromStationId(Request $request)
+    // Cari jadwal berdasarkan nama stasiun asal
+    $fromStationName = $request->input('from_station_name');
+    $schedules = Schedule::whereHas('fromStation', function ($query) use ($fromStationName) {
+        $query->where('name', 'like', '%' . $fromStationName . '%');
+    })->get();
+
+    return response()->json(['schedules' => $schedules], 200);
+}
+
+
+    public function logout(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'from_station_id' => 'required|integer',
-        ]);
+        $user = auth('api')->user();
+        $user->tokens()->delete();
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $schedules = Schedule::where('from_station_id', $request->from_station_id)->get();
-
-        return response()->json(['schedules' => $schedules], 200);
+        return response()->json(['message' => 'Logout successful'], 200);
     }
 }
+
