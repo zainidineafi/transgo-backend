@@ -42,7 +42,7 @@ class BussesController extends Controller
                     )
                     ->where('busses.id_upt', $uptId) // Menambahkan kondisi untuk ID Upt
                     ->orderBy('busses.id', 'asc') // Mengatur urutan berdasarkan ID secara ascending
-                    ->paginate(10);
+                    ->paginate(15);
 
                 // Mengembalikan data tersebut ke view
                 return view('busses.index', compact('busses'));
@@ -69,7 +69,7 @@ class BussesController extends Controller
                         ->orWhere('license_plate_number', 'like', '%' . $searchTerm . '%');
                 })
                     ->where('id_upt', $uptId) // Menambahkan kondisi id_upt
-                    ->paginate(10);
+                    ->paginate(15);
 
                 return view('busses.index', compact('busses'));
             }
@@ -153,6 +153,9 @@ class BussesController extends Controller
         }
 
         $userId = Auth::id();
+
+        // Mengubah huruf menjadi kapital
+        $licensePlateNumber = strtoupper($request->input('license_plate_number'));
 
         $bus = Buss::create([
             'name' => $request->name,
@@ -336,8 +339,10 @@ class BussesController extends Controller
             }
         }
 
+
+
         $bus->name = $request->name;
-        $bus->license_plate_number = $request->license_plate_number;
+        $bus->license_plate_number = strtoupper($request->license_plate_number);
         $bus->chair = $request->chair;
         $bus->class = $request->class;
         $bus->status = $request->status;

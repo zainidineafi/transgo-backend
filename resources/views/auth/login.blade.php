@@ -19,7 +19,7 @@
         <link href="../assets/plugins/font-awesome/css/all.min.css" rel="stylesheet">
         <link href="../assets/plugins/toastr/toastr.min.css" rel="stylesheet">  
 
-      
+        <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
         <!-- Theme Styles -->
         <link href="../assets/css/lime.min.css" rel="stylesheet">
         <link href="../assets/css/custom.css" rel="stylesheet">

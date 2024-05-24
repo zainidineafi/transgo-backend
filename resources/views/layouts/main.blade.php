@@ -20,6 +20,8 @@
         <link href="../../assets/plugins/font-awesome/css/all.min.css" rel="stylesheet">
         <link href="../../assets/plugins/toastr/toastr.min.css" rel="stylesheet">
 
+        <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
+
         <link href="../../assets/plugins/select2/css/select2.min.css" rel="stylesheet">
         <link href="../../assets/plugins/cropper-master/cropper.min.css" rel="stylesheet"> 
         <link href="https://unpkg.com/cropperjs/dist/cropper.css" rel="stylesheet"/> 
