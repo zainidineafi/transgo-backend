@@ -66,11 +66,16 @@ class ProfileController extends Controller
         // Validasi data yang diterima dari form
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $id,
+            'email' => [
+                'required',
+                'email',
+                'unique:users,email,' . $id,
+                'regex:/^[a-zA-Z0-9._%+-]+@gmail\.com$/'
+            ],
             'password' => 'nullable|min:8',
             'address' => 'required',
             'gender' => 'required',
-            'phone_number' => 'required|unique:users,phone_number,' . $id,
+            'phone_number' => 'required|unique:users,phone_number,' . $id . '|min:10|max:13|regex:/^[0-9]+$/',
         ]);
 
 

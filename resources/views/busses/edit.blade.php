@@ -8,7 +8,7 @@
                 <div class="col-xl">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Edit Bus</h5>
+                            <h5 class="card-title">Ubah Bus</h5>
                             <p>Ubah data sesuai kebutuhan</p>
                             <form method="POST" action="{{ route('busses.update', $bus->id) }}" enctype="multipart/form-data">
                                 @csrf    

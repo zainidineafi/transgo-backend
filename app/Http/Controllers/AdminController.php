@@ -99,7 +99,7 @@ class AdminController extends Controller
             'password' => 'required|min:8',
             'address' => 'required',
             'gender' => 'required',
-            'phone_number' => 'required|unique:users',
+            'phone_number' => 'required|unique:users|digits_between:10,13',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -137,6 +137,12 @@ class AdminController extends Controller
 
         $admin = User::findOrFail($id);
 
+        // Periksa apakah pengguna memiliki peran 'Driver'
+        if (!$admin->hasRole('Admin')) {
+            // Jika pengguna bukan seorang 'Driver', redirect atau tampilkan pesan error
+            return redirect()->route('admins.index')->with('error', 'Pengguna ini bukan seorang Driver.');
+        }
+
         // Periksa apakah ID pengguna yang sedang login sama dengan id_upt dari admin
         if ($userId != $admin->id_upt) {
             // Jika tidak sama, redirect atau tampilkan pesan error
@@ -159,6 +165,12 @@ class AdminController extends Controller
 
         // Mendapatkan data admin berdasarkan ID
         $admin = User::findOrFail($id);
+
+        // Periksa apakah pengguna memiliki peran 'Driver'
+        if (!$admin->hasRole('Admin')) {
+            // Jika pengguna bukan seorang 'Driver', redirect atau tampilkan pesan error
+            return redirect()->route('admins.index')->with('error', 'Pengguna ini bukan seorang Driver.');
+        }
 
         // Periksa apakah ID pengguna yang sedang login sama dengan id_upt dari admin
         if ($userId != $admin->id_upt) {
@@ -192,7 +204,7 @@ class AdminController extends Controller
             'password' => 'nullable|min:8',
             'address' => 'required',
             'gender' => 'required',
-            'phone_number' => 'required|unique:users,phone_number,' . $id,
+            'phone_number' => 'required|unique:users,phone_number,' . $id . '|min:10|max:13|regex:/^[0-9]+$/',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 

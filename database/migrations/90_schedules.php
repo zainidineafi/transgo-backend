@@ -23,9 +23,9 @@ return new class extends Migration
             $table->string('pwt');
             $table->timestamps();
 
-            $table->foreign('bus_id')->references('id')->on('busses');
-            $table->foreign('from_station_id')->references('id')->on('bus_stations');
-            $table->foreign('to_station_id')->references('id')->on('bus_stations');
+            $table->foreign('bus_id')->references('id')->on('busses')->onDelete('cascade');
+            $table->foreign('from_station_id')->references('id')->on('bus_stations')->onDelete('cascade');
+            $table->foreign('to_station_id')->references('id')->on('bus_stations')->onDelete('cascade');
         });
     }
 

@@ -30,10 +30,9 @@
                                     <a href="{{ route('schedules.create') }}" class="btn btn-outline-success mr-2" data-toggle="tooltip" data-placement="top" title="Tambah">
                                         <i class="fas fa-plus"></i>
                                     </a>
-                                        <a href="#" id="deleteAllSelectedRecord" class="btn btn-outline-danger" data-toggle="modal" data-target="#confirmationModal" data-url="{{ route('schedules.destroy.multi') }}">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </a>
-
+                                    <a href="#" id="deleteAllSelectedRecord" class="btn btn-outline-danger mr-2" data-toggle="modal" data-target="#confirmationModal" data-url="{{ route('schedules.destroy.multi') }}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
                                         @endif
                                         <button id="exportToExcel" class="btn btn-outline-primary" data-toggle="tooltip" data-placement="top" title="Cetak">
                                             <i class="fas fa-file-excel"></i> Cetak

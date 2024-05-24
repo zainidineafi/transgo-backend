@@ -84,9 +84,9 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="phone_number">Nomor Handphone</label>
-                                            <input type="text" class="form-control @error('phone_number') is-invalid @enderror" name="phone_number" id="phone_number" placeholder="Nomor Handphone" required value="{{ old('phone_number') }}" maxlength="13">
+                                            <input type="text" class="form-control @error('phone_number') is-invalid @enderror" name="phone_number" id="phone_number" placeholder="Nomor Handphone" required value="{{ old('phone_number') }}" minlength="10" maxlength="13">
                                             @error('phone_number')
-                                            <div class="invalid-feedback">Nomor Handphone sudah terpakai</div>
+                                            <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         </div>
                                     </div>

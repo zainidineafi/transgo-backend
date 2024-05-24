@@ -81,6 +81,17 @@ class BusStationController extends Controller
     {
         $userId = Auth::id();
         $busStation = BusStation::findOrFail($id);
+
+        // Cek apakah stasiun bus dengan ID yang diberikan terkait dengan pengguna
+        $userBusStation = UserBusStation::where('user_id', $userId)
+            ->where('bus_station_id', $id)
+            ->first();
+
+        // Jika tidak ditemukan, tolak akses atau alihkan pengguna
+        if (!$userBusStation) {
+            return redirect()->route('bus_stations.index')->with('error', 'Anda tidak memiliki akses ke stasiun bus ini.');
+        }
+
         $adminBusStations = AdminBusStation::where('bus_station_id', $busStation->id)->get();
         $selectedAdmins = $adminBusStations->pluck('user_id')->toArray();
 

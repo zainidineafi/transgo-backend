@@ -8,7 +8,7 @@
                 <div class="col-xl">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Detail Kondektur</h5>
+                            <h5 class="card-title">Detail Kondektur Bus</h5>
                             <form method="POST" action="" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row align-items-center">

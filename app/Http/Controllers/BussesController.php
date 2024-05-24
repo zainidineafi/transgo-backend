@@ -109,17 +109,47 @@ class BussesController extends Controller
             'status' => 'required',
             'drivers' => 'nullable|array',
             'bus_conductors' => 'nullable|array',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         // Menghapus spasi dari nomor plat kendaraan
         $licensePlateNumber = str_replace(' ', '', $request->license_plate_number);
 
+        // Handle image upload
         $image = $request->file('image');
-
         if ($image) {
+            // Store the uploaded image in the 'avatars' directory
             $imageName = $image->store('avatars');
         } else {
-            $imageName = 'avatars/default_bus.png';
+            // Menentukan jalur gambar default berdasarkan gender
+            $defaultImagePath =  'assets/images/avatars/bus.jpg';
+
+            // Cek apakah file gambar default ada
+            $defaultImageExists = file_exists(public_path($defaultImagePath));
+
+            // Debugging: Dump hasil pemeriksaan
+            // dd($defaultImageExists);
+
+            // Nama file gambar default
+            $defaultImageName = basename($defaultImagePath); // Misalnya, 'male.jpg'
+            $imageName = 'avatars/' . $defaultImageName;
+
+            // Cek apakah gambar tidak ada di direktori 'avatars'
+            if (!Storage::disk('public')->exists($imageName)) {
+                // Jalur lengkap ke gambar tujuan di storage publik
+                $destinationPath = public_path('storage/' . $imageName);
+
+                // Buat direktori tujuan jika belum ada
+                if (!file_exists(dirname($destinationPath))) {
+                    mkdir(dirname($destinationPath), 0755, true);
+                }
+
+                // Salin gambar default ke direktori 'avatars'
+                $copySuccess = copy(public_path($defaultImagePath), $destinationPath);
+
+                // Debugging: Dump hasil penyalinan
+                // dd($copySuccess);
+            }
         }
 
         $userId = Auth::id();
@@ -162,8 +192,14 @@ class BussesController extends Controller
     {
         $user = Auth::user();
         $userId = $user->hasRole('Upt') ? $user->id : ($user->hasRole('Admin') ? $user->id_upt : null);
-        //$userId = Auth::id();
+
         $bus = Buss::findOrFail($id);
+
+        // Periksa apakah ID pengguna yang sedang login sama dengan id_upt dari bus
+        if ($userId != $bus->id_upt) {
+            // Jika tidak sama, redirect atau tampilkan pesan error
+            return redirect()->route('busses.index')->with('error', 'Anda tidak memiliki izin untuk mengakses halaman ini.');
+        }
         $driveconduc = DriverConductorBus::where('bus_id', $bus->id)->get();
 
         //dd($driveconduc);
@@ -202,7 +238,15 @@ class BussesController extends Controller
     {
         $user = Auth::user();
         $userId = $user->hasRole('Upt') ? $user->id : ($user->hasRole('Admin') ? $user->id_upt : null);
+
         $bus = Buss::findOrFail($id);
+
+        // Periksa apakah ID pengguna yang sedang login sama dengan id_upt dari bus
+        if ($userId != $bus->id_upt) {
+            // Jika tidak sama, redirect atau tampilkan pesan error
+            return redirect()->route('busses.index')->with('error', 'Anda tidak memiliki izin untuk mengakses halaman ini.');
+        }
+
         $driveconduc = DriverConductorBus::where('bus_id', $bus->id)->get();
 
         //dd($driveconduc);
@@ -252,14 +296,44 @@ class BussesController extends Controller
             'class' => 'required',
             'status' => 'required',
             'images' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        // Handle image upload
         $image = $request->file('image');
-
         if ($image) {
+            // Store the uploaded image in the 'avatars' directory
             $imageName = $image->store('avatars');
         } else {
-            $imageName = 'avatars/default_bus.png';
+            // Menentukan jalur gambar default berdasarkan gender
+            $defaultImagePath =  'assets/images/avatars/bus.jpg';
+
+            // Cek apakah file gambar default ada
+            $defaultImageExists = file_exists(public_path($defaultImagePath));
+
+            // Debugging: Dump hasil pemeriksaan
+            // dd($defaultImageExists);
+
+            // Nama file gambar default
+            $defaultImageName = basename($defaultImagePath); // Misalnya, 'male.jpg'
+            $imageName = 'avatars/' . $defaultImageName;
+
+            // Cek apakah gambar tidak ada di direktori 'avatars'
+            if (!Storage::disk('public')->exists($imageName)) {
+                // Jalur lengkap ke gambar tujuan di storage publik
+                $destinationPath = public_path('storage/' . $imageName);
+
+                // Buat direktori tujuan jika belum ada
+                if (!file_exists(dirname($destinationPath))) {
+                    mkdir(dirname($destinationPath), 0755, true);
+                }
+
+                // Salin gambar default ke direktori 'avatars'
+                $copySuccess = copy(public_path($defaultImagePath), $destinationPath);
+
+                // Debugging: Dump hasil penyalinan
+                // dd($copySuccess);
+            }
         }
 
         $bus->name = $request->name;

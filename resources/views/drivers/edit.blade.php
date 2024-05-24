@@ -8,7 +8,7 @@
                 <div class="col-xl">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Edit Sopir</h5>
+                            <h5 class="card-title">Ubah Sopir</h5>
                             <p>Ubah data sesuai kebutuhan</p>
                             <form method="POST" action="{{ route('drivers.update', $driver->id) }}" enctype="multipart/form-data">
                                 @csrf
@@ -25,7 +25,7 @@
                                             <label for="email">Email</label>
                                             <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" id="email" placeholder="Masukkan Email" value="{{ old('email', $driver->email) }}" required>
                                             @error('email')
-                                                <div class="invalid-feedback">Email sudah terpakai</div>
+                                                <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                             <div class="invalid-feedback" id="email-error-message" style="display: none;">
                                                 Email harus berakhiran @gmail.com
@@ -86,9 +86,9 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="phone_number">Nomor Handphone</label>
-                                            <input type="text" class="form-control @error('phone_number') is-invalid @enderror" name="phone_number" id="phone_number" placeholder="Nomor Handphone" value="{{ old('phone_number', $driver->phone_number) }}" required maxlength="13">
+                                            <input type="text" class="form-control @error('phone_number') is-invalid @enderror" name="phone_number" id="phone_number" placeholder="Nomor Handphone" value="{{ old('phone_number', $driver->phone_number) }}" required minlength="10" maxlength="13">
                                             @error('phone_number')
-                                            <div class="invalid-feedback">Nomor Handphone sudah terpakai</div>
+                                            <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         </div>
                                     </div>
@@ -106,8 +106,11 @@
                                 <div class="form-group">
                                     <label for="image">Avatar</label>
                                     <div class="input-group">
-                                        <input class="form-control" type="file" name="image" id="image">
-                                    </div>
+                                        <input class="form-control @error('image') is-invalid @enderror" type="file" name="image" id="image" accept="image/*">
+                                        @error('image')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    </div> 
                                 </div>
                                 
                                  <!-- Button trigger modal -->

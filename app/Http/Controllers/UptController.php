@@ -90,7 +90,7 @@ class UptController extends Controller
             'password' => 'required|min:8',
             'address' => 'required',
             'gender' => 'required',
-            'phone_number' => 'required|unique:users',
+            'phone_number' => 'required|unique:users|digits_between:10,13',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -154,7 +154,7 @@ class UptController extends Controller
             'password' => 'nullable|min:8',
             'address' => 'required',
             'gender' => 'required',
-            'phone_number' => 'required|unique:users,phone_number,' . $id,
+            'phone_number' => 'required|unique:users,phone_number,' . $id . '|min:10|max:13|regex:/^[0-9]+$/',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 

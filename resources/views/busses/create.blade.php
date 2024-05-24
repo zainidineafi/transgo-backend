@@ -22,7 +22,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="license_plate_number">Nomor Polisi Kendaraan</label>
-                                            <input type="text" class="form-control" name="license_plate_number" id="license_plate_number" placeholder="Masukkan Nomor Polisi Kendaraan" required maxlength="11" oninput="this.value = this.value.replace(/\s/g, '');">
+                                            <input type="text" class="form-control" name="license_plate_number" id="license_plate_number" placeholder="Masukkan Nomor Polisi Kendaraan" required maxlength="9" oninput="this.value = this.value.replace(/\s/g, '');">
                                             @error('license_plate_number')
                                                 <div class="invalid-feedback">Nomor Plat Kendaraan sudah terpakai</div>
                                             @enderror
@@ -66,11 +66,11 @@
                                         <div class="form-group">
                                             <label for="image">Avatar</label>
                                             <div class="input-group">
-                                                <input class="form-control" type="file" name="image" id="image">
-                                                @if(old('image'))
-                                                    <span class="input-group-text">{{ old('image') }}</span>
-                                                @endif
-                                            </div>
+                                                <input class="form-control @error('image') is-invalid @enderror" type="file" name="image" id="image" accept="image/*">
+                                                @error('image')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            </div> 
                                         </div>
                                     </div>
                                 </div>

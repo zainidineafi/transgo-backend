@@ -35,9 +35,15 @@ class BusConductorController extends Controller
 
     public function search(Request $request)
     {
+        $userId = Auth::id();
+        $user = Auth::user(); // Mendapatkan objek pengguna yang sedang login
+
+        // Tentukan id_upt berdasarkan peran pengguna
+        $uptId = $user->hasRole('Upt') ? $user->id : ($user->hasRole('Admin') ? $user->id_upt : null);
         $searchTerm = $request->input('search');
 
         $bus_conductors = User::role('Bus_Conductor')
+            ->where('id_upt', $uptId) // Tambahkan kondisi untuk memeriksa id_upt
             ->where(function ($query) use ($searchTerm) {
                 $query->where('name', 'like', '%' . $searchTerm . '%')
                     ->orWhere('address', 'like', '%' . $searchTerm . '%');
@@ -96,11 +102,12 @@ class BusConductorController extends Controller
         // Validasi data yang diterima dari form
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email|unique:users|regex:/^[a-zA-Z0-9._%+-]+@gmail\.com$/',
             'password' => 'required|min:8',
             'address' => 'required',
             'gender' => 'required',
-            'phone_number' => 'required|unique:users',
+            'phone_number' => 'required|unique:users|digits_between:10,13',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $userId = Auth::id();
@@ -133,7 +140,21 @@ class BusConductorController extends Controller
     // Menampilkan form untuk mengedit pengguna
     public function edit($id)
     {
+        $userId = Auth::id();
         $bus_conductor = User::findOrFail($id);
+
+        // Periksa apakah pengguna memiliki peran 'Driver'
+        if (!$bus_conductor->hasRole('Bus_Conductor')) {
+            // Jika pengguna bukan seorang 'Driver', redirect atau tampilkan pesan error
+            return redirect()->route('drivers.index')->with('error', 'Pengguna ini bukan seorang Driver.');
+        }
+
+        // Periksa apakah ID pengguna yang sedang login sama dengan id_upt dari admin
+        if ($userId != $bus_conductor->id_upt) {
+            // Jika tidak sama, redirect atau tampilkan pesan error
+            return redirect()->route('drivers.index')->with('error', 'Anda tidak memiliki izin untuk mengakses halaman ini.');
+        }
+
         $roles = Role::all();
         $genders = [
             'male' => 'Laki-Laki',
@@ -145,7 +166,21 @@ class BusConductorController extends Controller
 
     public function detail($id)
     {
+
+        $userId = Auth::id();
         $bus_conductor = User::findOrFail($id);
+
+        // Periksa apakah pengguna memiliki peran 'Driver'
+        if (!$bus_conductor->hasRole('Bus_Conductor')) {
+            // Jika pengguna bukan seorang 'Driver', redirect atau tampilkan pesan error
+            return redirect()->route('drivers.index')->with('error', 'Pengguna ini bukan seorang Driver.');
+        }
+
+        // Periksa apakah ID pengguna yang sedang login sama dengan id_upt dari admin
+        if ($userId != $bus_conductor->id_upt) {
+            // Jika tidak sama, redirect atau tampilkan pesan error
+            return redirect()->route('drivers.index')->with('error', 'Anda tidak memiliki izin untuk mengakses halaman ini.');
+        }
         $roles = Role::all();
         $genders = [
             'male' => 'Laki-Laki',
@@ -161,13 +196,18 @@ class BusConductorController extends Controller
         // Validasi data yang diterima dari form
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $id,
+            'email' => [
+                'required',
+                'email',
+                'unique:users,email,' . $id,
+                'regex:/^[a-zA-Z0-9._%+-]+@gmail\.com$/'
+            ],
             'password' => 'nullable|min:8',
             'address' => 'required',
             'gender' => 'required',
-            'phone_number' => 'required|unique:users,phone_number,' . $id,
+            'phone_number' => 'required|unique:users,phone_number,' . $id . '|min:10|max:13|regex:/^[0-9]+$/',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
 
         // Ambil data pengguna yang akan diupdate
         $bus_conductor = User::findOrFail($id);
