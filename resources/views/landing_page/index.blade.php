@@ -93,9 +93,9 @@ https://templatemo.com/tm-570-chain-app-dev
                   </div>
                   <div class="col-lg-12">
                     <div class="white-button scroll-to-section">
-                      <a href="#contact">Play Store <i class="fab fa-google-play"></i></a>
+                        <a  onclick="window.location.href = 'https://drive.google.com/drive/folders/1_Ll-pYnGgicpqnDQZ8plmHM6YdFE0CKU';">Play Store <i class="fab fa-google-play"></i></a>
                     </div>
-                  </div>
+                </div>
                 </div>
               </div>
             </div>
