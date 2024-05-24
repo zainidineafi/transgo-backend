@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Buss;
 use App\Models\Reservation;
 use App\Models\User;
+use App\Models\UserBusStation;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -43,9 +44,31 @@ class DashboardController extends Controller
 
         //dd($sevenDaysAgo);
 
-        $totalAdmins = User::role('Admin')->count();
-        $totalBusStations = DB::table('bus_stations')->count();
-        $totalBusses = DB::table('busses')->count();
+        if ($uptId) {
+            // Mendapatkan total admins yang memiliki ID upt yang sesuai
+            $totalAdmins = User::role('Admin')
+                ->where('id_upt', $uptId)
+                ->count();
+
+            // Mendapatkan total busses yang sesuai dengan ID upt
+            $totalBusses = DB::table('busses')
+                ->where('id_upt', $uptId)
+                ->count();
+        } else {
+            // Jika ID upt tidak ditemukan, set total admins dan total busses menjadi 0 atau lakukan penanganan lainnya
+            $totalAdmins = 0;
+            $totalBusses = 0;
+        }
+
+        $userId = $user->id;
+        $totalBusStations = UserBusStation::where('user_id', $userId)
+            ->distinct('bus_station_id') // Memastikan hanya menghitung entri yang unik berdasarkan bus_station_id
+            ->count('bus_station_id');
+
+        // Atau jika Anda ingin mengambil data bus station yang terkait dengan pengguna tertentu
+        $userBusStations = UserBusStation::where('user_id', $userId)->get();
+        $totalBusStations = $userBusStations->unique('bus_station_id')->count();
+
 
         $status = $request->input('status');
         $query = DB::table('busses')

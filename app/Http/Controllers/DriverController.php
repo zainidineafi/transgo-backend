@@ -60,11 +60,41 @@ class DriverController extends Controller
     // Menyimpan pengguna baru ke database
     public function store(Request $request)
     {
+        // Handle image upload
         $image = $request->file('image');
         if ($image) {
+            // Store the uploaded image in the 'avatars' directory
             $imageName = $image->store('avatars');
         } else {
-            $imageName = 'avatars/default.jpg';
+            // Menentukan jalur gambar default berdasarkan gender
+            $defaultImagePath = $request->gender == 'Male' ? 'assets/images/avatars/male.jpg' : 'assets/images/avatars/female.jpg';
+
+            // Cek apakah file gambar default ada
+            $defaultImageExists = file_exists(public_path($defaultImagePath));
+
+            // Debugging: Dump hasil pemeriksaan
+            // dd($defaultImageExists);
+
+            // Nama file gambar default
+            $defaultImageName = basename($defaultImagePath); // Misalnya, 'male.jpg'
+            $imageName = 'avatars/' . $defaultImageName;
+
+            // Cek apakah gambar tidak ada di direktori 'avatars'
+            if (!Storage::disk('public')->exists($imageName)) {
+                // Jalur lengkap ke gambar tujuan di storage publik
+                $destinationPath = public_path('storage/' . $imageName);
+
+                // Buat direktori tujuan jika belum ada
+                if (!file_exists(dirname($destinationPath))) {
+                    mkdir(dirname($destinationPath), 0755, true);
+                }
+
+                // Salin gambar default ke direktori 'avatars'
+                $copySuccess = copy(public_path($defaultImagePath), $destinationPath);
+
+                // Debugging: Dump hasil penyalinan
+                // dd($copySuccess);
+            }
         }
         // Validasi data yang diterima dari form
         $request->validate([

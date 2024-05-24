@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('bus_id');
             $table->foreignId('schedule_id');
             $table->integer('tickets_booked');
+            $table->date('date_departure');
             $table->enum('status', [1, 2]);
             $table->timestamps();
 

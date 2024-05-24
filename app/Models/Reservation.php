@@ -14,6 +14,7 @@ class Reservation extends Model
         'bus_id',
         'schedule_id',
         'tickets_booked',
+        'date_departure',
         'status',
     ];
 

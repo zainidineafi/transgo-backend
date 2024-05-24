@@ -45,7 +45,7 @@ $(function () {
             error: function (xhr, textStatus, errorThrown) {
                 console.error(xhr.responseText); // Log pesan kesalahan ke konsol
                 // Handle error
-                alert("An error occurred while deleting records.");
+                alert("Mohon pilih satu data terlebih dahulu");
             },
         });
         // Cetak nilai all_ids ke konsol untuk memeriksa nilai yang dikirimkan

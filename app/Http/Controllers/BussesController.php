@@ -50,31 +50,6 @@ class BussesController extends Controller
         }
     }
 
-    public function filter(Request $request)
-    {
-        $status = $request->query('status');
-
-        Log::info('Filter status:', ['status' => $status]);
-
-        $query = Buss::leftJoin('driver_conductor_bus', 'busses.id', '=', 'driver_conductor_bus.bus_id')
-            ->leftJoin('users as drivers', 'driver_conductor_bus.driver_id', '=', 'drivers.id')
-            ->leftJoin('users as conductors', 'driver_conductor_bus.bus_conductor_id', '=', 'conductors.id')
-            ->select(
-                'busses.*',
-                'drivers.name as driver_name',
-                'conductors.name as conductor_name'
-            );
-
-        if ($status) {
-            $query->where('busses.status', $status);
-        }
-
-        $busses = $query->get();
-
-        return response()->json(['busses' => $busses]);
-    }
-
-
 
     public function search(Request $request)
     {

@@ -24,7 +24,7 @@
                                             <label for="email">Email</label>
                                             <input type="email"  class="form-control @error('email') is-invalid @enderror"  name="email" id="email" placeholder="Masukkan Email" required value="{{ old('email') }}">
                                             @error('email')
-                                            <div class="invalid-feedback">Email sudah terpakai</div>
+                                            <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                             <div class="invalid-feedback" id="email-error-message" style="display: none;">
                                                 Email harus berakhiran @gmail.com
@@ -104,11 +104,11 @@
                                 <div class="form-group">
                                     <label for="image">Avatar</label>
                                     <div class="input-group">
-                                        <input class="form-control" type="file" name="image" id="image">
-                                        @if(old('image'))
-                                            <span class="input-group-text">{{ old('image') }}</span>
-                                        @endif
-                                    </div>
+                                        <input class="form-control @error('image') is-invalid @enderror" type="file" name="image" id="image" accept="image/*">
+                                        @error('image')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    </div> 
                                 </div>
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-primary float-left mr-2" data-toggle="modal" data-target="#exampleModal">

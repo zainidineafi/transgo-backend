@@ -63,19 +63,23 @@
         
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <div class="navbar-text ml-auto d-flex align-items-center">
-                                <img src="{{ asset('storage/' . Auth::user()->images) }}" alt="Avatar" class="avatar mr-2">
-                                {{ str_word_count(Auth::user()->name) > 1 ? explode(" ", Auth::user()->name)[0] : Auth::user()->name }}
-                            </div>
-                        </li>
+                        @if (!Auth::user()->hasRole('Root'))
+                            <li class="nav-item">
+                                <div class="navbar-text ml-auto d-flex align-items-center">
+                                    <img src="{{ asset('storage/' . Auth::user()->images) }}" alt="Avatar" class="avatar mr-2">
+                                    {{ str_word_count(Auth::user()->name) > 1 ? explode(" ", Auth::user()->name)[0] : Auth::user()->name }}
+                                </div>
+                            </li>
+                        @endif
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="material-icons">more_vert</i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="{{ route('profile') }}">Profile</a>
-                                <div class="dropdown-divider"></div>
+                                @if (!Auth::user()->hasRole('Root'))
+                                    <a class="dropdown-item" href="{{ route('profile') }}">Profile</a>
+                                    <div class="dropdown-divider"></div>
+                                @endif
                                 <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     Keluar
                                 </a>
@@ -86,6 +90,7 @@
                         </li>
                     </ul>
                 </div>
+                
                 
                 
 

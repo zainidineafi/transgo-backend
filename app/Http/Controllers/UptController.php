@@ -46,22 +46,53 @@ class UptController extends Controller
     // Menyimpan pengguna baru ke database
     public function store(Request $request)
     {
+        // Handle image upload
         $image = $request->file('image');
         if ($image) {
+            // Store the uploaded image in the 'avatars' directory
             $imageName = $image->store('avatars');
         } else {
-            $imageName = 'avatars/default.jpg';
+            // Menentukan jalur gambar default berdasarkan gender
+            $defaultImagePath = $request->gender == 'Male' ? 'assets/images/avatars/male.jpg' : 'assets/images/avatars/female.jpg';
+
+            // Cek apakah file gambar default ada
+            $defaultImageExists = file_exists(public_path($defaultImagePath));
+
+            // Debugging: Dump hasil pemeriksaan
+            // dd($defaultImageExists);
+
+            // Nama file gambar default
+            $defaultImageName = basename($defaultImagePath); // Misalnya, 'male.jpg'
+            $imageName = 'avatars/' . $defaultImageName;
+
+            // Cek apakah gambar tidak ada di direktori 'avatars'
+            if (!Storage::disk('public')->exists($imageName)) {
+                // Jalur lengkap ke gambar tujuan di storage publik
+                $destinationPath = public_path('storage/' . $imageName);
+
+                // Buat direktori tujuan jika belum ada
+                if (!file_exists(dirname($destinationPath))) {
+                    mkdir(dirname($destinationPath), 0755, true);
+                }
+
+                // Salin gambar default ke direktori 'avatars'
+                $copySuccess = copy(public_path($defaultImagePath), $destinationPath);
+
+                // Debugging: Dump hasil penyalinan
+                // dd($copySuccess);
+            }
         }
+
         // Validasi data yang diterima dari form
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email|unique:users|regex:/^[a-zA-Z0-9._%+-]+@gmail\.com$/',
             'password' => 'required|min:8',
             'address' => 'required',
             'gender' => 'required',
             'phone_number' => 'required|unique:users',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
 
         // Simpan data pengguna baru ke dalam database
         $upt = User::create([
@@ -73,10 +104,9 @@ class UptController extends Controller
             'phone_number' => $request->phone_number,
             'images' => $imageName,
             'created_at' => Carbon::now(),
-
         ]);
 
-        // Beri peran 'Root' kepada pengguna baru
+        // Beri peran 'Upt' kepada pengguna baru
         $role = Role::findByName('Upt');
         $upt->assignRole($role);
 
@@ -115,11 +145,17 @@ class UptController extends Controller
         // Validasi data yang diterima dari form
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $id,
+            'email' => [
+                'required',
+                'email',
+                'unique:users,email,' . $id,
+                'regex:/^[a-zA-Z0-9._%+-]+@gmail\.com$/'
+            ],
             'password' => 'nullable|min:8',
             'address' => 'required',
             'gender' => 'required',
             'phone_number' => 'required|unique:users,phone_number,' . $id,
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
 
