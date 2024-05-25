@@ -21,7 +21,6 @@ class ApiPassengerController extends Controller
             'address' => 'required|string',
             'gender' => 'required|in:male,female',
             'phone_number' => 'required|string',
-            'images' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -35,7 +34,6 @@ class ApiPassengerController extends Controller
             'address' => $request->address,
             'gender' => $request->gender,
             'phone_number' => $request->phone_number,
-            'images' => $request->images,
         ]);
 
         $token = $user->createToken('ApiPassenger')->plainTextToken;
