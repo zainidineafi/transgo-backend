@@ -22,7 +22,7 @@ class ApiBusConductorController extends Controller
     public function BusConductors()
     {
         $BusConductors = User::role('Bus_Conductor')->get();
-        return response()->json(['BusConductors' => $BusConductors]);
+        return response()->json(['BusConductors' => $BusConductors], 200);
     }
 
     public function registerBusConductor(Request $request)
@@ -37,7 +37,7 @@ class ApiBusConductorController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
         $images = 'default.jpg';
@@ -57,7 +57,9 @@ class ApiBusConductorController extends Controller
             $user->assignRole($role);
         }
 
-        return response()->json(['message' => 'User registered successfully'], 201);
+        $token = $user->createToken('ApiBusConductor')->plainTextToken;
+
+        return response()->json(['message' => 'User registered successfully', 'token' => $token], 201);
     }
 
     public function loginBusConductor(Request $request)
@@ -65,13 +67,8 @@ class ApiBusConductorController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            ApiToken::where('user_id', $user->id)->delete();
-            $token = Str::random(40);
-            ApiToken::create([
-                'user_id' => $user->id,
-                'token' => $token,
-            ]);
+            $user = auth('api')->user();
+            $token = $user->createToken('ApiBusConductor')->plainTextToken;
 
             return response()->json(['access_token' => $token, 'user' => $user], 200);
         } else {
@@ -91,7 +88,7 @@ class ApiBusConductorController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
         $images = 'default.jpg';
@@ -103,7 +100,6 @@ class ApiBusConductorController extends Controller
             'address' => $request->address,
             'gender' => $request->gender,
             'phone_number' => $request->phone_number,
-            'images' => $images,
         ]);
 
         $role = Role::where('name', 'Driver')->first();
@@ -111,7 +107,9 @@ class ApiBusConductorController extends Controller
             $user->assignRole($role);
         }
 
-        return response()->json(['message' => 'User registered successfully'], 201);
+        $token = $user->createToken('ApiDriver')->plainTextToken;
+
+        return response()->json(['message' => 'User registered successfully', 'token' => $token], 201);
     }
 
     public function loginDriver(Request $request)
@@ -119,13 +117,8 @@ class ApiBusConductorController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            ApiToken::where('user_id', $user->id)->delete();
-            $token = Str::random(40);
-            ApiToken::create([
-                'user_id' => $user->id,
-                'token' => $token,
-            ]);
+            $user = auth('api')->user();
+            $token = $user->createToken('ApiDriver')->plainTextToken;
 
             return response()->json(['access_token' => $token, 'user' => $user], 200);
         } else {
@@ -141,10 +134,10 @@ class ApiBusConductorController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $user = Auth::user();
+        $user = auth('api')->user();
 
         if (!Hash::check($request->old_password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
@@ -163,10 +156,10 @@ class ApiBusConductorController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $user = Auth::user();
+        $user = auth('api')->user();
         $user->address = $request->address;
         $user->save();
 
@@ -180,10 +173,10 @@ class ApiBusConductorController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $user = Auth::user();
+        $user = auth('api')->user();
         $user->phone_number = $request->phone_number;
         $user->save();
 
@@ -197,10 +190,10 @@ class ApiBusConductorController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $user = Auth::user();
+        $user = auth('api')->user();
 
         if ($request->hasFile('images')) {
             $image = $request->file('images');
@@ -215,15 +208,12 @@ class ApiBusConductorController extends Controller
         return response()->json(['message' => 'Image updated successfully'], 200);
     }
 
-    public function getBusConductorByName(Request $request, $name)
+    public function getBusConductorByName(Request $request)
     {
-        $user = User::where('name', 'LIKE', "%$name%")->role('Bus_Conductor')->get();
+        $name = $request->input('name');
+        $users = User::where('name', 'LIKE', "%$name%")->role('Bus_Conductor')->get();
 
-        if ($user->isEmpty()) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        return response()->json(['BusConductor' => $user], 200);
+        return response()->json(['BusConductors' => $users], 200);
     }
 
     public function getBusConductorById($id)
@@ -237,15 +227,12 @@ class ApiBusConductorController extends Controller
         return response()->json(['BusConductor' => $user], 200);
     }
 
-    public function getDriverByName(Request $request, $name)
+    public function getDriverByName(Request $request)
     {
-        $user = User::where('name', 'LIKE', "%$name%")->role('Driver')->get();
+        $name = $request->input('name');
+        $users = User::where('name', 'LIKE', "%$name%")->role('Driver')->get();
 
-        if ($user->isEmpty()) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        return response()->json(['Driver' => $user], 200);
+        return response()->json(['Drivers' => $users], 200);
     }
 
     public function getDriverById($id)
@@ -257,5 +244,13 @@ class ApiBusConductorController extends Controller
         }
 
         return response()->json(['Driver' => $user], 200);
+    }
+
+    public function logout(Request $request)
+    {
+        $user = auth('api')->user();
+        $user->tokens()->delete();
+
+        return response()->json(['message' => 'Logout successful'], 200);
     }
 }
