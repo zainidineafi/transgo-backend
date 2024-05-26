@@ -29,7 +29,7 @@ jobs:
         with:
           host: 103.210.69.72
           port: 22
-          username: kelompok8
+          username: User8
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /path/to/your/laravel/app
