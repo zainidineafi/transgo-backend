@@ -28,7 +28,7 @@ jobs:
         uses: appleboy/ssh-action@v0.1.2
         with:
           host: 103.210.69.72
-          username: Ubuntu
+          username: User8
           key: |
             -----BEGIN OPENSSH PRIVATE KEY-----
             b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFwAAAAdzc2gtcn
@@ -84,3 +84,4 @@ jobs:
             cd /path/to/your/laravel/app
             git pull origin main
             php artisan migrate --force
+          debug: true
