@@ -32,7 +32,7 @@ jobs:
           username: User8
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /path/to/your/laravel/app
+            /home/User8/transgo-backend
             git pull origin main
             php artisan migrate --force
           debug: true
