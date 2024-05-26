@@ -14,8 +14,5 @@ Use Framework Laravel
   composer install  # Install dependencies
   cp .env.example .env  # Buat salinan dari .env.example sebagai .env
   php artisan key:generate  # Generate application key
-  
-  
-  Gegara anik gabisa bisa
 ```
 
