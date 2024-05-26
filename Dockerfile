@@ -46,8 +46,13 @@ RUN chown -R User8:www /var/www
 USER User8
 
 # Menyalin file composer.lock dan composer.json, dan menginstal dependensi PHP
-COPY --chown=User8:www composer.lock composer.json /var/www/
-RUN composer install
+COPY --chown=www-data:www-data composer.lock composer.json /var/www/
+WORKDIR /var/www/
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+
+# Menyalin seluruh kode aplikasi ke dalam container
+COPY --chown=www-data:www-data . /var/www/
+
 
 # Mengekspos port 9000 dan menjalankan server php-fpm
 EXPOSE 9000
