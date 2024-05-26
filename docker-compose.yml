@@ -1,6 +1,6 @@
 version: "3"
 services:
-    # PHP Service
+    #PHP Service
     app:
         build:
             context: .
@@ -12,8 +12,6 @@ services:
         environment:
             SERVICE_NAME: app
             SERVICE_TAGS: dev
-            UID: ${LOCAL_UID:-1000}
-            GID: ${LOCAL_GID:-1000}
         working_dir: /var/www
         volumes:
             - ./:/var/www
@@ -22,7 +20,7 @@ services:
         networks:
             - app-network
 
-    # Nginx Service
+    #Nginx Service
     webserver:
         image: nginx:alpine
         container_name: webserver
@@ -37,7 +35,7 @@ services:
         networks:
             - app-network
 
-    # MySQL Service
+    #MySQL Service
     db:
         image: mysql:5.7.22
         container_name: db
@@ -57,12 +55,11 @@ services:
         networks:
             - app-network
 
-# Docker Networks
+#Docker Networks
 networks:
     app-network:
         driver: bridge
-
-# Volumes
+#Volumes
 volumes:
     dbdata:
         driver: local
