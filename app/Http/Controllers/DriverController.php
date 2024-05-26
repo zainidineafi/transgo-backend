@@ -25,7 +25,7 @@ class DriverController extends Controller
                 $uptId = $user->hasRole('Upt') ? $user->id : ($user->hasRole('Admin') ? $user->id_upt : null);
 
                 // Ambil data pengguna dengan peran Driver terkait dengan Upt yang sesuai
-                $drivers = User::role('Driver')->where('id_upt', $uptId)->paginate(10);
+                $drivers = User::role('Driver')->where('id_upt', $uptId)->paginate(15);
 
                 // Kembalikan tampilan dengan data pengguna (drivers)
                 return view('drivers.index', compact('drivers'));
@@ -53,7 +53,7 @@ class DriverController extends Controller
                 $query->where('name', 'like', '%' . $searchTerm . '%')
                     ->orWhere('address', 'like', '%' . $searchTerm . '%');
             })
-            ->paginate(10);
+            ->paginate(15);
 
         return view('drivers.index', compact('drivers'));
     }

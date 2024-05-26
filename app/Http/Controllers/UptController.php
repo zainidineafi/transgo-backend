@@ -16,7 +16,7 @@ class UptController extends Controller
     // Menampilkan daftar pengguna
     public function index()
     {
-        $upts = User::role('Upt')->paginate(10); // Menentukan 10 item per halaman
+        $upts = User::role('Upt')->paginate(15); // Menentukan 10 item per halaman
 
         return view('upts.index', compact('upts'));
     }
@@ -31,7 +31,7 @@ class UptController extends Controller
                 $query->where('name', 'like', '%' . $searchTerm . '%')
                     ->orWhere('address', 'like', '%' . $searchTerm . '%');
             })
-            ->paginate(10);
+            ->paginate(15);
 
         return view('upts.index', compact('upts'));
     }

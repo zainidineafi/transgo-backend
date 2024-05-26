@@ -24,7 +24,7 @@ class BusConductorController extends Controller
 
                 $uptId = $user->hasRole('Upt') ? $user->id : ($user->hasRole('Admin') ? $user->id_upt : null);
 
-                $bus_conductors = User::role('Bus_Conductor')->where('id_upt', $uptId)->paginate(10);
+                $bus_conductors = User::role('Bus_Conductor')->where('id_upt', $uptId)->paginate(15);
                 return view('bus_conductors.index', compact('bus_conductors'));
             }
         }
@@ -48,7 +48,7 @@ class BusConductorController extends Controller
                 $query->where('name', 'like', '%' . $searchTerm . '%')
                     ->orWhere('address', 'like', '%' . $searchTerm . '%');
             })
-            ->paginate(10);
+            ->paginate(15);
 
         return view('bus_conductors.index', compact('bus_conductors'));
     }

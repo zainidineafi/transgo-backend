@@ -23,7 +23,7 @@ class AdminController extends Controller
             ->leftJoin('bus_stations', 'admin_bus_station.bus_station_id', '=', 'bus_stations.id')
             ->where('users.id_upt', $userId) // Menambahkan kondisi pengecekan id_upt
             ->select('users.*', 'bus_stations.name as terminal_name')
-            ->paginate(10);
+            ->paginate(15);
 
         return view('admins.index', compact('admins'));
     }
@@ -41,7 +41,7 @@ class AdminController extends Controller
                     ->orWhere('address', 'like', '%' . $searchTerm . '%');
             })
             ->where('id_upt', $userId)
-            ->paginate(10);
+            ->paginate(15);
 
         return view('admins.index', compact('admins'));
     }

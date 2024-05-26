@@ -117,16 +117,10 @@
         <script src="../../assets/plugins/toastr/toastr.min.js"></script>
         <script src="../../assets/plugins/select2/js/select2.full.min.js"></script>
         
-
-        
-
         <script src="../../assets/js/pages/toastr.js"></script>
        
         <script src="../../assets/js/lime.min.js"></script>
         <script src="../../assets/js/pages/select2.js"></script>
-
-       
-        
 
         <script src="../../assets/js/custom.js"></script>
         <script src="../../assets/js/search.js"></script>
