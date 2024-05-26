@@ -25,11 +25,11 @@ jobs:
         run: php artisan optimize:clear && php artisan optimize
 
       - name: Deploy to server 🚀
-        uses: appleboy/ssh-action@v0.1.2
+        uses: appleboy/ssh-action@master
         with:
           host: 103.210.69.72
           port: 22
-          username: kelompok8
+          username: User8
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /path/to/your/laravel/app
