@@ -27,60 +27,10 @@ jobs:
       - name: Deploy to server 🚀
         uses: appleboy/ssh-action@v0.1.2
         with:
-          host: 103.210.69.72
-          username: User8
-          key: |
-            -----BEGIN OPENSSH PRIVATE KEY-----
-            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
-
-            -----END OPENSSH PRIVATE KEY-----
-          port: 22
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT}}
           script: |
             cd /path/to/your/laravel/app
             git pull origin main
