@@ -19,7 +19,7 @@ jobs:
       - name: Setup PHP environment 🏗
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.0'
 
       - name: Install Composer dependencies 👨🏻‍💻
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
