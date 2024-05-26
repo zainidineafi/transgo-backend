@@ -32,9 +32,7 @@ jobs:
           username: User8
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "Changing ownership and permissions"
-            sudo chown -R User8:User8 /home/User8/transgo-backend
-            sudo chmod -R 755 /home/User8/transgo-backend
             cd /home/User8/transgo-backend
-            git pull
+            git pull origin main
+            git status
           debug: true
