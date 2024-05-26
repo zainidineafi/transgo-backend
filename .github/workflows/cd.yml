@@ -28,7 +28,7 @@ jobs:
         uses: appleboy/ssh-action@v0.1.2
         with:
           host: 103.210.69.72
-          username: User8
+          username: Ubuntu
           key: |
             -----BEGIN OPENSSH PRIVATE KEY-----
             b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFwAAAAdzc2gtcn
