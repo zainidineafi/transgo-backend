@@ -16,6 +16,6 @@ Use Framework Laravel
   php artisan key:generate  # Generate application key
 
 
-##phei kontolodon
+##phei kontolodon megakonto
 ```
 
