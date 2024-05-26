@@ -36,5 +36,5 @@ jobs:
             sudo chown -R User8:User8 /home/User8/transgo-backend
             sudo chmod -R 755 /home/User8/transgo-backend
             cd /home/User8/transgo-backend
-            git pull origin main
+            git pull
           debug: true
