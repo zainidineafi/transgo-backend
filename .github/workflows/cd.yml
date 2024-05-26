@@ -27,9 +27,9 @@ jobs:
       - name: Deploy to server 🚀
         uses: appleboy/ssh-action@v0.1.2
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: 103.210.69.72
+          username: User8
+          key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDM5NHFz+ioWYWR3O3HWy4G732Vlc1pS54Bl0yDBF6ngZF/F4pmyJVXC7uubsiLzfb2iUC6wTBpHC0u8jxqFAnXO0pkmxlSKUQkZ0wY1qA5LhMQ/Gj71BBCaP/CHcpEOQCFPHl6T1trWy2tKW67UDyE>
           script: |
             cd /path/to/your/laravel/app
             git pull origin main
