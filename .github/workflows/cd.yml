@@ -29,7 +29,56 @@ jobs:
         with:
           host: 103.210.69.72
           username: User8
-          key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDM5NHFz+ioWYWR3O3HWy4G732Vlc1pS54Bl0yDBF6ngZF/F4pmyJVXC7uubsiLzfb2iUC6wTBpHC0u8jxqFAnXO0pkmxlSKUQkZ0wY1qA5LhMQ/Gj71BBCaP/CHcpEOQCFPHl6T1trWy2tKW67UDyE>
+          key: |
+            -----BEGIN OPENSSH PRIVATE KEY-----
+            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
+            -----END OPENSSH PRIVATE KEY-----
           port: 22
           script: |
             cd /path/to/your/laravel/app
