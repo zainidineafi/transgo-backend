@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             PermissionsTableSeeder::class,
             CreateUsersSeeder::class,
             AssignPermissionsSeeder::class,
+            BusStationsSeeder::class,
         ]);
     }
 }
