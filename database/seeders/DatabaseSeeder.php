@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             BusStationsSeeder::class,
             //AdminBusStationSeeder::class
             BusSeeder::class,
+            BusRouteSeeder::class,
         ]);
     }
 }
