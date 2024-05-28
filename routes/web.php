@@ -2,8 +2,6 @@
 
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BusConductorController;
@@ -16,7 +14,6 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ScheduleController;
-use App\Models\BusStation;
 
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');

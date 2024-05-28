@@ -44,4 +44,8 @@ class Buss extends Model
         return $this->belongsToMany(User::class, 'driver_conductor_bus', 'bus_id', 'bus_conductor_id');
     }
 
+    public function schedules()
+    {
+        return $this->belongsTo(Schedule::class, 'id');
+    }
 }
