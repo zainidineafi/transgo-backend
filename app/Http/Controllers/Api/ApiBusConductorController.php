@@ -3,44 +3,29 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\ApiToken;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class ApiBusConductorController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['registerBusConductor', 'loginBusConductor', 'registerDriver', 'loginDriver']]);
-    }
-
-    public function BusConductors()
-    {
-        $BusConductors = User::role('Bus_Conductor')->get();
-        return response()->json(['BusConductors' => $BusConductors], 200);
-    }
-
     public function registerBusConductor(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'address' => 'required|string|max:255',
-            'gender' => 'required|string|in:male,female',
-            'phone_number' => 'required|string|max:20',
+            'name' => 'required|string',
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|min:6',
+            'address' => 'required|string',
+            'gender' => 'required|in:male,female',
+            'phone_number' => 'required|string',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
+            return response()->json(['error' => $validator->errors()], 400);
         }
-
-        $images = 'default.jpg';
 
         $user = User::create([
             'name' => $request->name,
@@ -49,17 +34,14 @@ class ApiBusConductorController extends Controller
             'address' => $request->address,
             'gender' => $request->gender,
             'phone_number' => $request->phone_number,
-            'images' => $images,
         ]);
 
-        $role = Role::where('name', 'Bus_Conductor')->first();
-        if ($role) {
-            $user->assignRole($role);
-        }
+        // Assign role 'Bus_Conductor' to the new user
+        $user->assignRole('Bus_Conductor');
 
         $token = $user->createToken('ApiBusConductor')->plainTextToken;
 
-        return response()->json(['message' => 'User registered successfully', 'token' => $token], 201);
+        return response()->json(['user' => $user, 'token' => $token], 201);
     }
 
     public function loginBusConductor(Request $request)
@@ -67,31 +49,34 @@ class ApiBusConductorController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $user = auth('api')->user();
-            $token = $user->createToken('ApiBusConductor')->plainTextToken;
+            $user = Auth::user();
 
-            return response()->json(['access_token' => $token, 'user' => $user], 200);
-        } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            // Check if the user has the 'Bus_Conductor' role
+            if (!$user->hasRole('Bus_Conductor')) {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+
+            $token = $user->createToken('ApiBusConductor')->plainTextToken;
+            return response()->json(['user' => $user, 'token' => $token], 200);
         }
+
+        return response()->json(['error' => 'Unauthorized'], 401);
     }
 
     public function registerDriver(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'address' => 'required|string|max:255',
-            'gender' => 'required|string|in:male,female',
-            'phone_number' => 'required|string|max:20',
+            'name' => 'required|string',
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|min:6',
+            'address' => 'required|string',
+            'gender' => 'required|in:male,female',
+            'phone_number' => 'required|string',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
+            return response()->json(['error' => $validator->errors()], 400);
         }
-
-        $images = 'default.jpg';
 
         $user = User::create([
             'name' => $request->name,
@@ -102,14 +87,12 @@ class ApiBusConductorController extends Controller
             'phone_number' => $request->phone_number,
         ]);
 
-        $role = Role::where('name', 'Driver')->first();
-        if ($role) {
-            $user->assignRole($role);
-        }
+        // Assign role 'Driver' to the new user
+        $user->assignRole('Driver');
 
         $token = $user->createToken('ApiDriver')->plainTextToken;
 
-        return response()->json(['message' => 'User registered successfully', 'token' => $token], 201);
+        return response()->json(['user' => $user, 'token' => $token], 201);
     }
 
     public function loginDriver(Request $request)
@@ -117,13 +100,18 @@ class ApiBusConductorController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $user = auth('api')->user();
-            $token = $user->createToken('ApiDriver')->plainTextToken;
+            $user = Auth::user();
 
-            return response()->json(['access_token' => $token, 'user' => $user], 200);
-        } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            // Check if the user has the 'Driver' role
+            if (!$user->hasRole('Driver')) {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+
+            $token = $user->createToken('ApiDriver')->plainTextToken;
+            return response()->json(['user' => $user, 'token' => $token], 200);
         }
+
+        return response()->json(['error' => 'Unauthorized'], 401);
     }
 
     public function updatePassword(Request $request)
@@ -137,7 +125,7 @@ class ApiBusConductorController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $user = auth('api')->user();
+        $user = Auth::user();
 
         if (!Hash::check($request->old_password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
@@ -159,7 +147,7 @@ class ApiBusConductorController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $user = auth('api')->user();
+        $user = Auth::user();
         $user->address = $request->address;
         $user->save();
 
@@ -176,7 +164,7 @@ class ApiBusConductorController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $user = auth('api')->user();
+        $user = Auth::user();
         $user->phone_number = $request->phone_number;
         $user->save();
 
@@ -193,7 +181,7 @@ class ApiBusConductorController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $user = auth('api')->user();
+        $user = Auth::user();
 
         if ($request->hasFile('images')) {
             $image = $request->file('images');
@@ -246,9 +234,21 @@ class ApiBusConductorController extends Controller
         return response()->json(['Driver' => $user], 200);
     }
 
+    public function BusConductors()
+    {
+        $BusConductors = User::role('Bus_Conductor')->get();
+        return response()->json(['BusConductors' => $BusConductors], 200);
+    }
+
+    public function Driver()
+    {
+        $BusConductors = User::role('Driver')->get();
+        return response()->json(['BusConductors' => $BusConductors], 200);
+    }
+
     public function logout(Request $request)
     {
-        $user = auth('api')->user();
+        $user = Auth::user();
         $user->tokens()->delete();
 
         return response()->json(['message' => 'Logout successful'], 200);

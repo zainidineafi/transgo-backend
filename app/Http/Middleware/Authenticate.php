@@ -3,20 +3,18 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
+use Closure;
 
 class Authenticate extends Middleware
 {
-   // Metode handle sesuai dengan kontrak Illuminate\Auth\Middleware\Authenticate
+
    public function handle($request, Closure $next, ...$guards)
-   {
+    {
+        $this->authenticate($request, $guards);
 
-       // Jika pengguna tidak terotentikasi, arahkan ke halaman login
-       if (! $request->expectsJson()) {
-           return route('login'); // Ubah ini dengan URL yang sesuai
-       }
+        return $next($request);
+    }
 
-       return $next($request);
-   }
     protected function redirectTo($request)
     {
         if (! $request->expectsJson()) {

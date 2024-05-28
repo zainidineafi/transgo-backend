@@ -36,23 +36,30 @@ class ApiPassengerController extends Controller
             'phone_number' => $request->phone_number,
         ]);
 
+        $user->assignRole('Passenger');
+
         $token = $user->createToken('ApiPassenger')->plainTextToken;
 
         return response()->json(['user' => $user, 'token' => $token], 201);
     }
 
     public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+{
+    $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            $token = $user->createToken('ApiPassenger')->plainTextToken;
-            return response()->json(['user' => $user, 'token' => $token], 200);
+    if (Auth::attempt($credentials)) {
+        $user = Auth::user();
+        if (!$user->hasRole('Passenger')) {
+            return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
+        $token = $user->createToken('ApiPassenger')->plainTextToken;
+        return response()->json(['user' => $user, 'token' => $token], 200);
     }
+
+    return response()->json(['error' => 'Unauthorized'], 401);
+}
+
 
     public function updatePassword(Request $request)
 {
@@ -214,6 +221,12 @@ public function searchSchedulesByFromStationAddress(Request $request)
     })->get();
 
     return response()->json(['schedules' => $schedules], 200);
+}
+
+public function getAllPassengers()
+{
+    $passengers = User::role('Passenger')->get();
+    return response()->json($passengers, 200);
 }
 
 

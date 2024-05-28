@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/upts', [ApiController::class, 'upts']);
 Route::get('/users', [ApiController::class, 'users']);
 
+Route::get('passengers', [ApiPassengerController::class, 'getAllPassengers']);
 
 Route::post('passenger/register', [ApiPassengerController::class, 'register']);
 Route::post('passenger/login', [ApiPassengerController::class, 'login']);
@@ -58,26 +59,34 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-
 // Bus Conductor routes
+Route::get('bus-conductor', [ApiBusConductorController::class, 'BusConductors']);
+
+// Routes for Bus Conductors
 Route::prefix('bus-conductor')->group(function () {
-    Route::post('/register', [ApiBusConductorController::class, 'registerBusConductor']);
-    Route::post('/login', [ApiBusConductorController::class, 'loginBusConductor']);
-    Route::get('/', [ApiBusConductorController::class, 'BusConductors']);
-    Route::put('/update-password', [ApiBusConductorController::class, 'updatePassword']);
-    Route::put('/update-address', [ApiBusConductorController::class, 'updateAddress']);
-    Route::put('/update-phone-number', [ApiBusConductorController::class, 'updatePhoneNumber']);
-    Route::put('/update-image', [ApiBusConductorController::class, 'updateImage']);
+    Route::post('register', [ApiBusConductorController::class, 'registerBusConductor']);
+    Route::post('login', [ApiBusConductorController::class, 'loginBusConductor']);
+    Route::get('name', [ApiBusConductorController::class, 'getBusConductorByName'])->middleware('auth:sanctum');
+    Route::get('id/{id}', [ApiBusConductorController::class, 'getBusConductorById'])->middleware('auth:sanctum');
 });
 
-// Driver routes
+Route::get('Driver', [ApiBusConductorController::class, 'Driver']);
+
+// Routes for Drivers
 Route::prefix('driver')->group(function () {
-    Route::post('/register', [ApiBusConductorController::class, 'registerDriver']);
-    Route::post('/login', [ApiBusConductorController::class, 'loginDriver']);
-    Route::put('/update-password', [ApiBusConductorController::class, 'updatePassword']);
-    Route::put('/update-address', [ApiBusConductorController::class, 'updateAddress']);
-    Route::put('/update-phone-number', [ApiBusConductorController::class, 'updatePhoneNumber']);
-    Route::put('/update-image', [ApiBusConductorController::class, 'updateImage']);
+    Route::post('register', [ApiBusConductorController::class, 'registerDriver']);
+    Route::post('login', [ApiBusConductorController::class, 'loginDriver']);
+    Route::get('name', [ApiBusConductorController::class, 'getDriverByName'])->middleware('auth:sanctum');
+    Route::get('id/{id}', [ApiBusConductorController::class, 'getDriverById'])->middleware('auth:sanctum');
+});
+
+// Common Routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('logout', [ApiBusConductorController::class, 'logout']);
+    Route::post('update-password', [ApiBusConductorController::class, 'updatePassword']);
+    Route::post('update-address', [ApiBusConductorController::class, 'updateAddress']);
+    Route::post('update-phone-number', [ApiBusConductorController::class, 'updatePhoneNumber']);
+    Route::post('update-image', [ApiBusConductorController::class, 'updateImage']);
 });
 
 //status dan data bus
@@ -96,3 +105,4 @@ Route::get('/current', [ApiReservationController::class, 'getAllCurrentReservati
 Route::get('/by-passenger-name', [ApiReservationController::class, 'getReservationsByPassengerName']);
 });
 
+Route::get('/tickets/all', [ApiReservationController::class, 'getAllTickets']);

@@ -9,6 +9,7 @@ use App\Models\Reservation;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Buss;
+use Carbon\Carbon;
 use App\Models\Schedule;
 
 class ApiReservationController extends Controller
@@ -65,6 +66,7 @@ class ApiReservationController extends Controller
                 'schedule_id' => $schedule->id,
                 'tickets_booked' => $request->tickets_booked,
                 'status' => 1, // Status 1: reserved
+                'date_departure' => Carbon::now(), // Mengisi tanggal pemesanan saat ini
             ]);
         }
 
@@ -103,31 +105,60 @@ class ApiReservationController extends Controller
     }
 
     public function acceptTicket($id)
+    {
+        $user = auth('api')->user();
+
+        // Cek apakah pengguna memiliki peran yang diizinkan
+        if (!$user->hasRole('Bus_Conductor') && !$user->hasRole('Driver')) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $reservation = Reservation::find($id);
+
+        if (!$reservation) {
+            return response()->json(['error' => 'Ticket not found'], 404);
+        }
+
+        if ($reservation->status != 1) {
+            return response()->json(['error' => 'Ticket already accepted or invalid status'], 400);
+        }
+
+        $bus = Buss::find($reservation->bus_id); // Perbaiki nama model dari Buss ke Bus
+        if (!$bus) {
+            return response()->json(['error' => 'Bus not found'], 404);
+        }
+
+        $bus->chair += $reservation->tickets_booked; // Mengembalikan jumlah kursi
+        $bus->save();
+
+        $reservation->status = 2; // Status 2: accepted
+        $reservation->save();
+
+        return response()->json(['reservation' => $reservation], 200);
+    }
+
+    public function getAllTickets()
 {
-    $reservation = Reservation::find($id);
+    $user = auth('api')->user();
 
-    if (!$reservation) {
-        return response()->json(['error' => 'Ticket not found'], 404);
+    // Pastikan user terotentikasi
+    if (!$user) {
+        return response()->json(['error' => 'Unauthenticated'], 401);
     }
 
-    if ($reservation->status != 1) {
-        return response()->json(['error' => 'Ticket already accepted or invalid status'], 400);
+    // Cek apakah pengguna memiliki peran yang diizinkan
+    if (!$user->hasRole('Bus_Conductor') && !$user->hasRole('Driver')) {
+        return response()->json(['error' => 'Unauthorized'], 403);
     }
 
-    $bus = Buss::find($reservation->bus_id); // Perbaiki nama model dari Buss ke Bus
-    if (!$bus) {
-        return response()->json(['error' => 'Bus not found'], 404);
-    }
+    // Ambil semua reservasi tiket dengan status 1
+    $reservations = Reservation::with('user')->where('status', 1)->get();
 
-    $bus->chair += $reservation->tickets_booked; // Mengembalikan jumlah kursi
-    $bus->save();
-
-    $reservation->status = 2; // Status 2: accepted
-    $reservation->save();
-
-    return response()->json(['reservation' => $reservation], 200);
+    return response()->json(['reservations' => $reservations], 200);
 }
 
+
 }
+
 
 

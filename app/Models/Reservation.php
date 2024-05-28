@@ -18,6 +18,10 @@ class Reservation extends Model
         'status',
     ];
 
+    protected $attributes = [
+        'date_departure' => null,
+    ];
+
     // Relasi dengan model User
     public function user()
     {
