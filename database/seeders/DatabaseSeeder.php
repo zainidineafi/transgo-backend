@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
             CreateUsersSeeder::class,
             AssignPermissionsSeeder::class,
             BusStationsSeeder::class,
+            //AdminBusStationSeeder::class
+            BusSeeder::class,
         ]);
     }
 }
