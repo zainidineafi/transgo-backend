@@ -80,7 +80,7 @@ class CreateUsersSeeder extends Seeder
             $name = $faker->name();
             $address = $faker->address();
             $gender = $faker->randomElement(['male', 'female']);
-            $images = $faker->randomElement(['avatars/male.jpg', 'avatars/female.jpg']);
+            $images = $gender === 'male' ? 'avatars/male.jpg' : 'avatars/female.jpg';
             $phone_number = '08' . $faker->numerify('########');
 
             // Determine id_upt based on range
