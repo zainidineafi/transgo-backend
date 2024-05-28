@@ -76,46 +76,59 @@ class AuthController extends Controller
         }
     }
 
-    public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+    public function loginDriver(Request $request)
+{
+    $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            try {
-                $user = $request->user();
-                $token = $user->createToken('API Token')->plainTextToken;
-                $roles = $user->getRoleNames(); // Fetch the user's roles
+    if (Auth::attempt($credentials)) {
+        try {
+            $user = $request->user();
+            $token = $user->createToken('API Token')->plainTextToken;
+            $roles = $user->getRoleNames(); // Fetch the user's roles
 
-                // Assuming a user has only one role, get the first role name
-                $role = $roles->isNotEmpty() ? $roles->first() : null;
+            // Assuming a user has only one role, get the first role name
+            $role = $roles->isNotEmpty() ? $roles->first() : null;
 
-                // Remove roles from user attributes before sending response
-                $userArray = $user->toArray();
-                unset($userArray['roles']);
-
-                // Return the response
-                return $this->responseFormatter->setStatusCode(201)
-                    ->setMessage('Success!')
+            // Check if the role is driver
+            if ($role === 'driver') {
+                // Custom response for driver
+                return $this->responseFormatter->setStatusCode(200)
+                    ->setMessage('Login successful! Welcome driver.')
                     ->setResult([
-                        'user' => $userArray,
+                        'user' => $user->toArray(),
                         'token' => $token,
-                        'role' => $role // Include the role in the response
+                        'role' => $role
                     ])
                     ->format();
-            } catch (\Exception $e) {
-                // Handle exceptions
-                return $this->responseFormatter->setStatusCode(500)
-                    ->setMessage('An error occurred while processing your request.')
-                    ->setResult(['error' => $e->getMessage()])
-                    ->format();
             }
-        }
 
-        return $this->responseFormatter->setStatusCode(500)
-            ->setMessage('Error!')
-            ->setResult(['error' => 'Credential not valid.'])
-            ->format();
+            // Remove roles from user attributes before sending response
+            $userArray = $user->toArray();
+            unset($userArray['roles']);
+
+            // General response for other roles
+            return $this->responseFormatter->setStatusCode(201)
+                ->setMessage('Success!')
+                ->setResult([
+                    'user' => $userArray,
+                    'token' => $token,
+                    'role' => $role // Include the role in the response
+                ])
+                ->format();
+        } catch (\Exception $e) {
+            // Handle exceptions
+            return $this->responseFormatter->setStatusCode(500)
+                ->setMessage('An error occurred while processing your request.')
+                ->setResult(['error' => $e->getMessage()])
+                ->format();
+        }
     }
+
+    return $this->responseFormatter->setStatusCode(401)
+        ->setMessage('Invalid credentials!')
+        ->setResult(['error' => 'Email or password is incorrect.'])
+        ->format();
+}
 
 
     public function logout(Request $request)
