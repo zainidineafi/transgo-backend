@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\ScheduleController;
+use App\Http\Controllers\Api\DriverAttendanceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,6 +20,7 @@ Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('loginDriver', [AuthController::class, 'loginDriver']);
 });
 
 // Route::middleware(['auth:sanctum'])->group(function () {
@@ -29,4 +31,5 @@ Route::prefix('schedules')->group(function () {
     Route::post('/reserve', [ScheduleController::class, 'reserveTicket']);
     Route::post('/update-reserve', [ScheduleController::class, 'updateReserveTicket']);
 });
-// });
+
+Route::put('Driver/status/{id}', [DriverAttendanceController::class, 'updateStatus']);
