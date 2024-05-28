@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('address')->nullable(false);
             $table->enum('gender', ['male', 'female'])->nullable(false);
             $table->string('phone_number')->nullable(false);
-            $table->string('images')->nullable(false);
+            $table->string('images')->default('default.jpg')->nullable(false);
             $table->unsignedBigInteger('id_upt')->nullable();
             $table->timestamps();
 

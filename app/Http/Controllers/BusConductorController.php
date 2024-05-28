@@ -24,7 +24,7 @@ class BusConductorController extends Controller
 
                 $uptId = $user->hasRole('Upt') ? $user->id : ($user->hasRole('Admin') ? $user->id_upt : null);
 
-                $bus_conductors = User::role('Bus_Conductor')->where('id_upt', $uptId)->paginate(10);
+                $bus_conductors = User::role('Bus_Conductor')->where('id_upt', $uptId)->paginate(15);
                 return view('bus_conductors.index', compact('bus_conductors'));
             }
         }
@@ -48,7 +48,7 @@ class BusConductorController extends Controller
                 $query->where('name', 'like', '%' . $searchTerm . '%')
                     ->orWhere('address', 'like', '%' . $searchTerm . '%');
             })
-            ->paginate(10);
+            ->paginate(15);
 
         return view('bus_conductors.index', compact('bus_conductors'));
     }
@@ -212,16 +212,40 @@ class BusConductorController extends Controller
         // Ambil data pengguna yang akan diupdate
         $bus_conductor = User::findOrFail($id);
 
-        // Periksa apakah ada file gambar yang diunggah
-        if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            Storage::delete($bus_conductor->images);
+        $image = $request->file('image');
+        if ($image) {
+            // Store the uploaded image in the 'avatars' directory
+            $imageName = $image->store('avatars');
+        } else {
+            // Menentukan jalur gambar default berdasarkan gender
+            $defaultImagePath = $request->gender == 'male' ? 'assets/images/avatars/male.jpg' : 'assets/images/avatars/female.jpg';
 
-            // Simpan file gambar baru ke dalam penyimpanan yang diinginkan
-            $imageName = $request->file('image')->store('avatars');
+            // Cek apakah file gambar default ada
+            $defaultImageExists = file_exists(public_path($defaultImagePath));
 
-            // Update nama file gambar dalam database
-            $bus_conductor->images = $imageName;
+            // Debugging: Dump hasil pemeriksaan
+            // dd($defaultImageExists);
+
+            // Nama file gambar default
+            $defaultImageName = basename($defaultImagePath); // Misalnya, 'male.jpg'
+            $imageName = 'avatars/' . $defaultImageName;
+
+            // Cek apakah gambar tidak ada di direktori 'avatars'
+            if (!Storage::disk('public')->exists($imageName)) {
+                // Jalur lengkap ke gambar tujuan di storage publik
+                $destinationPath = public_path('storage/' . $imageName);
+
+                // Buat direktori tujuan jika belum ada
+                if (!file_exists(dirname($destinationPath))) {
+                    mkdir(dirname($destinationPath), 0755, true);
+                }
+
+                // Salin gambar default ke direktori 'avatars'
+                $copySuccess = copy(public_path($defaultImagePath), $destinationPath);
+
+                // Debugging: Dump hasil penyalinan
+                // dd($copySuccess);
+            }
         }
 
         // Update data pengguna
@@ -233,6 +257,7 @@ class BusConductorController extends Controller
         $bus_conductor->address = $request->address;
         $bus_conductor->gender = $request->gender;
         $bus_conductor->phone_number = $request->phone_number;
+        $bus_conductor->images = $imageName;
         $bus_conductor->save();
 
         // Redirect ke halaman daftar pengguna dengan pesan sukses

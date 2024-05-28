@@ -23,7 +23,7 @@ class AdminController extends Controller
             ->leftJoin('bus_stations', 'admin_bus_station.bus_station_id', '=', 'bus_stations.id')
             ->where('users.id_upt', $userId) // Menambahkan kondisi pengecekan id_upt
             ->select('users.*', 'bus_stations.name as terminal_name')
-            ->paginate(10);
+            ->paginate(15);
 
         return view('admins.index', compact('admins'));
     }
@@ -41,7 +41,7 @@ class AdminController extends Controller
                     ->orWhere('address', 'like', '%' . $searchTerm . '%');
             })
             ->where('id_upt', $userId)
-            ->paginate(10);
+            ->paginate(15);
 
         return view('admins.index', compact('admins'));
     }
@@ -192,6 +192,7 @@ class AdminController extends Controller
 
     public function update(Request $request, $id)
     {
+
         // Validasi data yang diterima dari form
         $request->validate([
             'name' => 'required',
@@ -212,16 +213,43 @@ class AdminController extends Controller
         // Ambil data pengguna yang akan diupdate
         $admin = User::findOrFail($id);
 
-        // Periksa apakah ada file gambar yang diunggah
-        if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            Storage::delete($admin->images);
+        // Handle image upload
+        $image = $request->file('image');
+        if ($image) {
+            // Store the uploaded image in the 'avatars' directory
+            $imageName = $image->store('avatars');
+        } else {
+            // Menentukan jalur gambar default berdasarkan gender
+            $gender = $request->input('gender');
 
-            // Simpan file gambar baru ke dalam penyimpanan yang diinginkan
-            $imageName = $request->file('image')->store('avatars');
+            $defaultImagePath = $gender == 'male' ? 'assets/images/avatars/male.jpg' : 'assets/images/avatars/female.jpg';
 
-            // Update nama file gambar dalam database
-            $admin->images = $imageName;
+            // Cek apakah file gambar default ada
+            $defaultImageExists = file_exists(public_path($defaultImagePath));
+
+            // Debugging: Dump hasil pemeriksaan
+            // dd($defaultImageExists);
+
+            // Nama file gambar default
+            $defaultImageName = basename($defaultImagePath); // Misalnya, 'male.jpg'
+            $imageName = 'avatars/' . $defaultImageName;
+
+            // Cek apakah gambar tidak ada di direktori 'avatars'
+            if (!Storage::disk('public')->exists($imageName)) {
+                // Jalur lengkap ke gambar tujuan di storage publik
+                $destinationPath = public_path('storage/' . $imageName);
+
+                // Buat direktori tujuan jika belum ada
+                if (!file_exists(dirname($destinationPath))) {
+                    mkdir(dirname($destinationPath), 0755, true);
+                }
+
+                // Salin gambar default ke direktori 'avatars'
+                $copySuccess = copy(public_path($defaultImagePath), $destinationPath);
+
+                // Debugging: Dump hasil penyalinan
+                // dd($copySuccess);
+            }
         }
 
         // Update data pengguna
@@ -233,6 +261,7 @@ class AdminController extends Controller
         $admin->address = $request->address;
         $admin->gender = $request->gender;
         $admin->phone_number = $request->phone_number;
+        $admin->images = $imageName;
         $admin->save();
 
         // Redirect ke halaman daftar pengguna dengan pesan sukses

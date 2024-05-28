@@ -21,7 +21,7 @@
                                                     <div class="overlay">
                                                         <div class="text">Klik untuk mengubah gambar</div>
                                                     </div>
-                                                    <input type="file" name="image" class="image" id="upload_image" style="display:none">
+                                                    <input type="file" name="image" class="form-control @error('image') is-invalid @enderror" accept="image/*" id="upload_image" style="display:none">
                                                 </label>
                                             </form>
                                         </div>
