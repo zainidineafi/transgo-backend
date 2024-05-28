@@ -52,8 +52,9 @@ class UptController extends Controller
             // Store the uploaded image in the 'avatars' directory
             $imageName = $image->store('avatars');
         } else {
+            $gender = $request->input('gender');
             // Menentukan jalur gambar default berdasarkan gender
-            $defaultImagePath = $request->gender == 'Male' ? 'assets/images/avatars/male.jpg' : 'assets/images/avatars/female.jpg';
+            $defaultImagePath = $gender == 'Male' ? 'assets/images/avatars/male.jpg' : 'assets/images/avatars/female.jpg';
 
             // Cek apakah file gambar default ada
             $defaultImageExists = file_exists(public_path($defaultImagePath));
@@ -142,6 +143,43 @@ class UptController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Handle image upload
+        $image = $request->file('image');
+        if ($image) {
+            // Store the uploaded image in the 'avatars' directory
+            $imageName = $image->store('avatars');
+        } else {
+            // Menentukan jalur gambar default berdasarkan gender
+            $defaultImagePath = $request->gender == 'Male' ? 'assets/images/avatars/male.jpg' : 'assets/images/avatars/female.jpg';
+
+            // Cek apakah file gambar default ada
+            $defaultImageExists = file_exists(public_path($defaultImagePath));
+
+            // Debugging: Dump hasil pemeriksaan
+            // dd($defaultImageExists);
+
+            // Nama file gambar default
+            $defaultImageName = basename($defaultImagePath); // Misalnya, 'male.jpg'
+            $imageName = 'avatars/' . $defaultImageName;
+
+            // Cek apakah gambar tidak ada di direktori 'avatars'
+            if (!Storage::disk('public')->exists($imageName)) {
+                // Jalur lengkap ke gambar tujuan di storage publik
+                $destinationPath = public_path('storage/' . $imageName);
+
+                // Buat direktori tujuan jika belum ada
+                if (!file_exists(dirname($destinationPath))) {
+                    mkdir(dirname($destinationPath), 0755, true);
+                }
+
+                // Salin gambar default ke direktori 'avatars'
+                $copySuccess = copy(public_path($defaultImagePath), $destinationPath);
+
+                // Debugging: Dump hasil penyalinan
+                // dd($copySuccess);
+            }
+        }
+
         // Validasi data yang diterima dari form
         $request->validate([
             'name' => 'required',
@@ -183,6 +221,7 @@ class UptController extends Controller
         $upt->address = $request->address;
         $upt->gender = $request->gender;
         $upt->phone_number = $request->phone_number;
+        $upt->images = $imageName;
         $upt->save();
 
         // Redirect ke halaman daftar pengguna dengan pesan sukses

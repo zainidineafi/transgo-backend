@@ -192,6 +192,7 @@ class AdminController extends Controller
 
     public function update(Request $request, $id)
     {
+
         // Validasi data yang diterima dari form
         $request->validate([
             'name' => 'required',
@@ -219,7 +220,9 @@ class AdminController extends Controller
             $imageName = $image->store('avatars');
         } else {
             // Menentukan jalur gambar default berdasarkan gender
-            $defaultImagePath = $request->gender == 'Male' ? 'assets/images/avatars/male.jpg' : 'assets/images/avatars/female.jpg';
+            $gender = $request->input('gender');
+
+            $defaultImagePath = $gender == 'male' ? 'assets/images/avatars/male.jpg' : 'assets/images/avatars/female.jpg';
 
             // Cek apakah file gambar default ada
             $defaultImageExists = file_exists(public_path($defaultImagePath));
@@ -258,6 +261,7 @@ class AdminController extends Controller
         $admin->address = $request->address;
         $admin->gender = $request->gender;
         $admin->phone_number = $request->phone_number;
+        $admin->images = $imageName;
         $admin->save();
 
         // Redirect ke halaman daftar pengguna dengan pesan sukses

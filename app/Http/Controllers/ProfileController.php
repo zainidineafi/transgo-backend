@@ -76,6 +76,7 @@ class ProfileController extends Controller
             'address' => 'required',
             'gender' => 'required',
             'phone_number' => 'required|unique:users,phone_number,' . $id . '|min:10|max:13|regex:/^[0-9]+$/',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
 
