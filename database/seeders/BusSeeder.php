@@ -31,7 +31,7 @@ class BusSeeder extends Seeder
                 'class' => $faker->randomElement(['ekonomi', 'bisnis']),
                 'status' => 1,
                 'information' => null,
-                'images' => null,
+                'images' => 'avatars/bus.jpg',
                 'id_upt' => $uptIds[$uptIndex % 3] // Cycle through 2, 3, 4
             ]);
 

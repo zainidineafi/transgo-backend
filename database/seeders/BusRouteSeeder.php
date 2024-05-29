@@ -24,10 +24,18 @@ class BusRouteSeeder extends Seeder
 
             $timeStart = sprintf('%02d:%02d:00', $hours, $minutes); // Formatted as HH:MM:SS
 
+            $fromStationId = $faker->randomElement($stationIds);
+            $toStationId = $faker->randomElement($stationIds);
+
+            // Ensure from_station_id and to_station_id are not the same
+            while ($toStationId == $fromStationId) {
+                $toStationId = $faker->randomElement($stationIds);
+            }
+
             Schedule::create([
                 'bus_id' => $faker->randomElement($busIds),
-                'from_station_id' => $faker->randomElement($stationIds),
-                'to_station_id' => $faker->randomElement($stationIds),
+                'from_station_id' => $fromStationId,
+                'to_station_id' => $toStationId,
                 'price' => $faker->randomElement([10000, 15000, 20000, 25000, 30000]),
                 'time_start' => $timeStart,
                 'pwt' => $faker->numberBetween(120, 300) // Estimated travel time in minutes
