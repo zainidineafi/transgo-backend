@@ -5,6 +5,7 @@ use App\Helpers\HttpResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Models\Buss;
 use App\Models\Reservation;
+use App\Models\DriverConductorBus;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -58,6 +59,40 @@ class DriverAttendanceController extends Controller
             return $this->responseFormatter->setStatusCode(200)
                 ->setMessage('Bus status updated successfully!')
                 ->setResult(['bus' => $bus])
+                ->format();
+        } catch (\Exception $e) {
+            return $this->responseFormatter->setStatusCode(500)
+                ->setMessage('Error!')
+                ->setResult(['error' => $e->getMessage()])
+                ->format();
+        }
+    }
+    public function DataDriver()
+    {
+        try {
+            // Mendapatkan semua data dari tabel driver_conductor_bus
+            $data = DriverConductorBus::all();
+
+            return $this->responseFormatter->setStatusCode(200)
+                ->setMessage('Data retrieved successfully!')
+                ->setResult(['driver_conductor_bus' => $data])
+                ->format();
+        } catch (\Exception $e) {
+            return $this->responseFormatter->setStatusCode(500)
+                ->setMessage('Error!')
+                ->setResult(['error' => $e->getMessage()])
+                ->format();
+        }
+    }
+    public function DataBus()
+    {
+        try {
+            // Mendapatkan semua data dari tabel busses
+            $data = Buss::all();
+
+            return $this->responseFormatter->setStatusCode(200)
+                ->setMessage('Data retrieved successfully!')
+                ->setResult(['busses' => $data])
                 ->format();
         } catch (\Exception $e) {
             return $this->responseFormatter->setStatusCode(500)

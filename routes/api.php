@@ -31,4 +31,6 @@ Route::prefix('schedules')->group(function () {
     Route::post('/update-reserve', [ScheduleController::class, 'updateReserveTicket']);
 });
 
-Route::put('Driver/status/{id}', [DriverAttendanceController::class, 'updateStatus']);
+Route::put('/Driver/status/{id}', [DriverAttendanceController::class, 'updateStatus']);
+Route::get('/Driver', [DriverAttendanceController::class, 'DataDriver']);
+Route::get('/Bus', [DriverAttendanceController::class, 'DataBus']);
