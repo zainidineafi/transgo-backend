@@ -24,9 +24,16 @@ class DriverAttendanceController extends Controller
     {
         try {
             // Validasi permintaan
-            $validator = Validator::make($request->all(), [
+            $rules = [
                 'status' => 'required|in:1,2,3,4,5',
-            ]);
+            ];
+
+            // Tambahkan validasi untuk information jika status adalah 4
+            if ($request->status == 4) {
+                $rules['information'] = 'required|string';
+            }
+
+            $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return $this->responseFormatter->setStatusCode(400)
@@ -40,6 +47,12 @@ class DriverAttendanceController extends Controller
 
             // Update status bus
             $bus->status = $request->status;
+
+            // Simpan informasi tambahan jika status adalah 4
+            if ($request->status == 4) {
+                $bus->information = $request->information;
+            }
+
             $bus->save();
 
             return $this->responseFormatter->setStatusCode(200)
@@ -53,6 +66,5 @@ class DriverAttendanceController extends Controller
                 ->format();
         }
     }
-
-
 }
+
