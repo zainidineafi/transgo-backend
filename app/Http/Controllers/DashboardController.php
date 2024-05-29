@@ -27,14 +27,18 @@ class DashboardController extends Controller
         $permissions = $user->getPermissionNames();
         $showDashboard = !$user->hasRole('Root');
 
+        $userId = Auth::id();
+
         // Mendapatkan tanggal sekarang dan 7 hari yang lalu
         $now = Carbon::now();
         $sevenDaysAgo = Carbon::now()->subDays(6); // Subtract 6 days to include today as the 7th day
 
-        // Mengambil data pemesanan dari 7 hari terakhir
+        // Mengambil data registrasi user dengan kondisi id_upt yang sesuai
         $userRegistrations = DB::table('reservations')
-            ->select(DB::raw('DATE(date_departure) as date'), DB::raw('COUNT(*) as reservations'))
-            ->whereBetween('date_departure', [$sevenDaysAgo->format('Y-m-d'), $now->format('Y-m-d')])
+            ->join('busses', 'reservations.bus_id', '=', 'busses.id')
+            ->select(DB::raw('DATE(reservations.date_departure) as date'), DB::raw('COUNT(*) as reservations'))
+            ->where('busses.id_upt', $userId)
+            ->whereBetween('reservations.date_departure', [$sevenDaysAgo->format('Y-m-d'), $now->format('Y-m-d')])
             ->groupBy('date')
             ->orderBy('date', 'asc')
             ->get();

@@ -23,7 +23,7 @@
                                         <th>Jam Berangkat</th>
                                         <th>Status</th>
                                         <th>Nama</th>
-                                        <th>Jenis Kelamin</th>
+                                        <th>Jumlah Tiket</th>
                                         <th>Nomor Handphone</th>
                                         <th>Tanggal Dibuat</th> 
                                     </tr>
@@ -40,6 +40,7 @@
                                         <td>{{ $reservation->schedule->bus->name }} ({{ $reservation->schedule->bus->license_plate_number }})</td>
                                         <td>{{ $reservation->schedule->fromStation->name }}</td>
                                         <td>{{ $reservation->schedule->toStation->name }}</td>
+
                                         <td>{{ $reservation->schedule->price }}</td>
                                         <td>{{ $reservation->date_departure }}</td>
                                         <td>{{ $reservation->schedule->time_start }}</td>
@@ -51,15 +52,9 @@
                                             @endif
                                         </td>
                                         <td>{{ $reservation->user->name }}</td>
+                                        <td>{{ $reservation->tickets_booked}}</td>
                                         <td>{{ $reservation->user->phone_number }}</td>
                                         <td>{{ $reservation->created_at }}</td>
-                                        <td>
-                                            <div class="btn-group" role="group" aria-label="Basic example">
-                                                <a href="" class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="Detail">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                            </div>
-                                        </td>
                                     </tr>
                                     @endforeach
                                     @endif
