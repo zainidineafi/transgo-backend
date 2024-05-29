@@ -68,7 +68,7 @@ class CreateUsersSeeder extends Seeder
         $faker = Faker::create('id_ID');
         $usedEmails = [];
 
-        for ($i = 5; $i <= 248; $i++) {
+        for ($i = 5; $i <= 220; $i++) {
             // Generate unique Gmail address
             do {
                 $emailUsername = $faker->userName();
