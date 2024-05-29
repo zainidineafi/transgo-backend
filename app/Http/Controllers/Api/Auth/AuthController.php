@@ -54,21 +54,18 @@ class AuthController extends Controller
                 'images' => 'default.jpg',
             ]);
 
-            // Retrieve the role from the query parameter
             $roleName = $request->isAuth;
             $role = Role::where('name', $roleName === 'conductor' ? 'Bus_Conductor' : ucfirst($roleName))->firstOrFail();
             $user->assignRole($role);
 
-            // Generate an API token for the user
             $token = $user->createToken('API Token')->plainTextToken;
 
-            // Return the response
             return $this->responseFormatter->setStatusCode(201)
                 ->setMessage('Success!')
                 ->setResult(['user' => $user, 'token' => $token])
                 ->format();
         } catch (\Exception $e) {
-            // Handle exceptions
+
             return $this->responseFormatter->setStatusCode(500)
                 ->setMessage('An error occurred while processing your request.')
                 ->setResult(['error' => $e->getMessage()])
@@ -76,7 +73,7 @@ class AuthController extends Controller
         }
     }
 
-    public function loginDriver(Request $request)
+    public function login(Request $request)
 {
     $credentials = $request->only('email', 'password');
 
@@ -84,14 +81,13 @@ class AuthController extends Controller
         try {
             $user = $request->user();
             $token = $user->createToken('API Token')->plainTextToken;
-            $roles = $user->getRoleNames(); // Fetch the user's roles
+            $roles = $user->getRoleNames();
 
-            // Assuming a user has only one role, get the first role name
+
             $role = $roles->isNotEmpty() ? $roles->first() : null;
 
-            // Check if the role is driver
+
             if ($role === 'driver') {
-                // Custom response for driver
                 return $this->responseFormatter->setStatusCode(200)
                     ->setMessage('Login successful! Welcome driver.')
                     ->setResult([
@@ -102,21 +98,18 @@ class AuthController extends Controller
                     ->format();
             }
 
-            // Remove roles from user attributes before sending response
             $userArray = $user->toArray();
             unset($userArray['roles']);
 
-            // General response for other roles
             return $this->responseFormatter->setStatusCode(201)
                 ->setMessage('Success!')
                 ->setResult([
                     'user' => $userArray,
                     'token' => $token,
-                    'role' => $role // Include the role in the response
+                    'role' => $role
                 ])
                 ->format();
         } catch (\Exception $e) {
-            // Handle exceptions
             return $this->responseFormatter->setStatusCode(500)
                 ->setMessage('An error occurred while processing your request.')
                 ->setResult(['error' => $e->getMessage()])
@@ -138,18 +131,18 @@ class AuthController extends Controller
             if ($user) {
                 $user->tokens()->delete();
 
-                // Return the response
+
                 return $this->responseFormatter->setStatusCode(200)
                     ->setMessage('Logout Success!')
                     ->format();
             } else {
-                // Return the response
+
                 return $this->responseFormatter->setStatusCode(401)
                     ->setMessage('User not authenticated')
                     ->format();
             }
         } catch (\Exception $e) {
-            // Handle exceptions
+
             return $this->responseFormatter->setStatusCode(500)
                 ->setMessage('An error occurred during logout.')
                 ->setResult(['error' => $e->getMessage()])
